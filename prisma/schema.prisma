@@ -1,0 +1,350 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Influencer {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  suggestedHandle String
+  bio            String
+  active         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  personaVersions PersonaVersion[]
+  referencePosts ReferencePost[]
+  referenceInfluencers ReferenceInfluencer[]
+  trends         TrendSignal[]
+  strategies     AnnualStrategy[]
+  briefs         ContentBrief[]
+  socialAccounts SocialAccount[]
+  experiments    Experiment[]
+  agentRuns      AgentRun[]
+  providerCosts  ProviderCost[]
+}
+
+model PersonaVersion {
+  id          String     @id @default(cuid())
+  influencerId String
+  version     Int
+  spec        Json
+  notes       String?
+  createdAt   DateTime   @default(now())
+  influencer  Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+
+  @@unique([influencerId, version])
+}
+
+model SocialAccount {
+  id                String     @id @default(cuid())
+  influencerId      String
+  platform          String
+  handle            String?
+  externalAccountId String?
+  status            String     @default("not_connected")
+  tokenCiphertext   String?
+  tokenExpiresAt    DateTime?
+  settings          Json?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  influencer        Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+
+  @@unique([influencerId, platform])
+}
+
+model ResearchSource {
+  id          String        @id @default(cuid())
+  kind        String
+  platform    String?
+  url         String
+  provenance  String
+  submittedBy String?
+  collectedAt DateTime      @default(now())
+  posts       ReferencePost[]
+  referenceAccounts ReferenceInfluencer[]
+  createdAt   DateTime      @default(now())
+}
+
+model ReferencePost {
+  id                 String        @id @default(cuid())
+  influencerId       String?
+  sourceId           String
+  platform           String
+  creatorHandle      String?
+  originalPostId     String?
+  url                String        @unique
+  publishedAt        DateTime?
+  format             String
+  caption            String?
+  hashtags           Json?
+  likes              Int?
+  comments           Int?
+  shares             Int?
+  saves              Int?
+  views              Int?
+  impressions        Int?
+  followerCount      Int?
+  metricsObservedAt  DateTime?
+  description        String?
+  visualAnalysis     Json?
+  tags               Json?
+  evidenceNotes      String?
+  createdAt          DateTime      @default(now())
+  influencer         Influencer?   @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  source             ResearchSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  briefs             ContentBrief[]
+
+  @@index([platform, publishedAt])
+  @@index([influencerId, format])
+}
+
+model ReferenceInfluencer {
+  id                     String         @id @default(cuid())
+  influencerId           String?
+  sourceId               String         @unique
+  platform               String
+  username               String?
+  profileUrl             String         @unique
+  niche                  String
+  audiencePositioning    String
+  audienceDemographics   String?
+  followerCount          Int?
+  followerCountObservedAt DateTime?
+  contentTypes           Json?
+  postingFrequency       String?
+  hashtags               Json?
+  publicEngagement       Json?
+  relevanceReason        String
+  collectedAt            DateTime       @default(now())
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+  influencer             Influencer?    @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  source                 ResearchSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([platform, niche])
+  @@index([influencerId, collectedAt])
+}
+
+model TrendSignal {
+  id                        String      @id @default(cuid())
+  influencerId              String?
+  topic                     String
+  sourceUrl                 String
+  sourceName                String
+  observedAt                DateTime
+  targetAudience            String?
+  relevance                 String
+  proposedConcept           String
+  estimatedProductionEffort String?
+  recommendedWindow         DateTime?
+  confidence                Float
+  expiresAt                 DateTime?
+  evidence                  Json?
+  createdAt                 DateTime    @default(now())
+  influencer                Influencer? @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  briefs                    ContentBrief[]
+}
+
+model AnnualStrategy {
+  id           String     @id @default(cuid())
+  influencerId String
+  year         Int
+  version      Int        @default(1)
+  plan         Json
+  createdAt    DateTime   @default(now())
+  influencer   Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+
+  @@unique([influencerId, year, version])
+}
+
+model ContentBrief {
+  id              String           @id @default(cuid())
+  influencerId    String
+  personaVersionId String?
+  referencePostId String?
+  trendSignalId   String?
+  title           String
+  concept         String
+  platform        String
+  format          String
+  contentPillar   String
+  captionDraft    String
+  imagePrompt     String
+  negativePrompt  String?
+  status          String           @default("draft")
+  scheduledFor    DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  influencer      Influencer       @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  referencePost   ReferencePost?   @relation(fields: [referencePostId], references: [id], onDelete: SetNull)
+  trendSignal     TrendSignal?     @relation(fields: [trendSignalId], references: [id], onDelete: SetNull)
+  assets          MediaAsset[]
+  generationJobs  GenerationJob[]
+  approvals       ApprovalRecord[]
+  scheduledPosts  ScheduledPost[]
+
+  @@index([influencerId, scheduledFor])
+  @@index([status, scheduledFor])
+}
+
+model MediaAsset {
+  id             String        @id @default(cuid())
+  contentBriefId String
+  generationJobId String?
+  kind           String        @default("image")
+  outputUrl      String
+  prompt         String
+  negativePrompt String?
+  seed           BigInt?
+  provider       String
+  model          String?
+  costUsd        Decimal?      @db.Decimal(10, 4)
+  metadata       Json?
+  reviewStatus   String        @default("pending")
+  isMock         Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  contentBrief   ContentBrief  @relation(fields: [contentBriefId], references: [id], onDelete: Cascade)
+  generationJob  GenerationJob? @relation(fields: [generationJobId], references: [id], onDelete: SetNull)
+  approvals      ApprovalRecord[]
+  scheduledPosts ScheduledPost[]
+}
+
+model GenerationJob {
+  id             String      @id @default(cuid())
+  contentBriefId String
+  provider       String
+  status         String      @default("queued")
+  idempotencyKey String      @unique
+  request        Json
+  result         Json?
+  attempts       Int         @default(0)
+  error           String?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  contentBrief   ContentBrief @relation(fields: [contentBriefId], references: [id], onDelete: Cascade)
+  assets         MediaAsset[]
+  costs          ProviderCost[]
+
+  @@index([status, createdAt])
+}
+
+model ApprovalRecord {
+  id             String       @id @default(cuid())
+  contentBriefId String
+  mediaAssetId   String?
+  decision       String
+  actor          String
+  notes          String?
+  createdAt      DateTime     @default(now())
+  contentBrief   ContentBrief @relation(fields: [contentBriefId], references: [id], onDelete: Cascade)
+  mediaAsset     MediaAsset?  @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+}
+
+model ScheduledPost {
+  id             String       @id @default(cuid())
+  contentBriefId String
+  mediaAssetId   String?
+  platform       String
+  scheduledFor   DateTime
+  status         String       @default("scheduled")
+  idempotencyKey String       @unique
+  lastError      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  contentBrief   ContentBrief @relation(fields: [contentBriefId], references: [id], onDelete: Cascade)
+  mediaAsset     MediaAsset?  @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  publishedPost  PublishedPost?
+
+  @@index([status, scheduledFor])
+}
+
+model PublishedPost {
+  id              String        @id @default(cuid())
+  scheduledPostId String        @unique
+  externalPostId  String?
+  postUrl         String?
+  publishedAt     DateTime
+  dryRun          Boolean       @default(false)
+  publicationStatus String      @default("published")
+  result           Json?
+  scheduledPost   ScheduledPost @relation(fields: [scheduledPostId], references: [id], onDelete: Cascade)
+  metrics         PostMetric[]
+}
+
+model PostMetric {
+  id              String        @id @default(cuid())
+  publishedPostId String
+  metric          String
+  value           Float?
+  source          String
+  observedAt      DateTime
+  publishedPost  PublishedPost @relation(fields: [publishedPostId], references: [id], onDelete: Cascade)
+
+  @@index([metric, observedAt])
+}
+
+model Experiment {
+  id           String     @id @default(cuid())
+  influencerId String
+  hypothesis   String
+  variable     String
+  status       String     @default("planned")
+  startsAt     DateTime?
+  endsAt       DateTime?
+  outcome      Json?
+  createdAt    DateTime   @default(now())
+  influencer   Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+}
+
+model AgentRun {
+  id           String     @id @default(cuid())
+  influencerId String?
+  agent        String
+  version      String
+  status       String
+  inputs       Json?
+  outputs      Json?
+  error        String?
+  costUsd      Decimal?   @db.Decimal(10, 4)
+  startedAt    DateTime   @default(now())
+  completedAt  DateTime?
+  influencer   Influencer? @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+}
+
+model ProviderCost {
+  id             String        @id @default(cuid())
+  influencerId   String?
+  generationJobId String?
+  provider       String
+  category       String
+  amountUsd      Decimal       @db.Decimal(10, 4)
+  observedAt     DateTime      @default(now())
+  metadata       Json?
+  influencer     Influencer?   @relation(fields: [influencerId], references: [id], onDelete: SetNull)
+  generationJob  GenerationJob? @relation(fields: [generationJobId], references: [id], onDelete: SetNull)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actor      String
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+}
+
+model SystemSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}

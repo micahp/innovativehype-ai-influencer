@@ -1,0 +1,93 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ai_influencer_studio
+      POSTGRES_USER: studio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-studio}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - studio-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U studio -d ai_influencer_studio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - studio-redis:/data
+
+  migrate:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npm", "run", "db:migrate"]
+    restart: "no"
+
+  seed:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: ["npm", "run", "db:seed"]
+    restart: "no"
+
+  app:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+      seed:
+        condition: service_completed_successfully
+    command: ["node", "server.js"]
+
+  worker:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
+      REDIS_URL: redis://redis:6379
+      APP_BASE_URL: http://app:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+      seed:
+        condition: service_completed_successfully
+      app:
+        condition: service_started
+    command: ["npm", "run", "worker"]
+
+volumes:
+  studio-db:
+  studio-redis:
