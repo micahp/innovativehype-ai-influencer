@@ -1,6 +1,6 @@
 # Implementation log
 
-Updated: 2026-10-31
+Updated: 2026-10-31 (prototype v2 review)
 
 ## Repository and feasibility audit
 
@@ -16,12 +16,12 @@ Updated: 2026-10-31
 
 - Next.js/TypeScript dashboard, Prisma/PostgreSQL schema and initial migration, Redis/BullMQ worker, Compose deployment, and environment templates.
 - Two versioned fictional adult creator profiles with different voices, visual descriptions, content pillars, AI disclosure, and pending canonical image references.
-- Twelve-month annual strategies and 20 evergreen calendar briefs per creator. These are editorial concepts, not trend research or generated media.
+- Twelve-month annual strategies. The v2 seed no longer creates production briefs without an owner-selected assignment.
 - Signed HTTP-only admin sessions and AES-256-GCM encrypted per-creator social credentials. Credential entry and publishing controls are in the dashboard; the platform token is validated against the supplied account ID before it is stored.
 - Manual reference-post ingestion with original URL, platform, provenance, optional observed metrics, and duplicate protection. Missing metrics remain null.
 - Manual reference-creator profile records with platform-specific URL validation, normalized duplicate checks, optional observed follower/post metrics and timestamps, relevance notes, source provenance, and a searchable research dashboard filtered by text, platform, and studio persona.
-- Manual, source-linked trend signal intake with observation timestamp, evidence notes, target audience, human confidence, expiry and recommended window, production effort, and a separate original content proposal. Trend-informed briefs retain the source signal relation and audit provenance.
-- Deterministic original-brief creation with source traceability and explicit non-reuse of source images, captions, and real-person likenesses.
+- Manual, source-linked trend signal intake with observation timestamp, evidence notes, target audience, human confidence, expiry and recommended window, production effort, and a separate original content proposal. Trend records remain proposals unless a future reviewed assignment explicitly includes their sources.
+- Deterministic original-brief creation requires an owner-approved creative assignment and stores its locked source snapshot, intended shot, persona version, and explicit non-reuse rules.
 - Fine Photo Gen adapter for the inspected `/api/generate` and `/api/edit` contracts, a BullMQ generation worker, durable generation records, and clearly labeled mock outputs.
 - Approval records, scheduled posts, idempotent request claims, dry-run and JSON export, emergency pause, failure states, and metrics import restricted to confirmed live posts.
 - Instagram Graph adapter for single-image feed posts; X API v2 adapter for text and single-image posts. X requests verify the authenticated user ID and set `made_with_ai: true`.
@@ -63,7 +63,29 @@ Updated: 2026-10-31
 
 ## Next implementation sequence
 
-1. Run Compose with PostgreSQL and Redis in an environment with Docker, then exercise seed, manual profile/post/trend research, linked briefs, mock generation, review, schedule, and dry-run end to end.
+1. Run Compose with PostgreSQL and Redis in an environment with Docker, then exercise assignment review, identity upload/review, approved brief creation, explicit mock generation authorization, content review, schedule, and dry-run end to end.
 2. Add permitted research connectors and collect source-linked examples; keep inaccessible fields explicitly missing.
 3. Provision dedicated platform apps/accounts, validate access scopes, and conduct one controlled live post per platform while the emergency pause and human approval controls are understood.
 4. Add scheduled platform insights collection, visual QA, cost budgets, notifications, backups, and evidence-linked weekly reports.
+
+## Prototype v2: reviewed push and curated assignment workflow
+
+- Reviewed pushed `main` at `700c8fea849b9fc88a631659a9d095887a1445b3`; fetched and merged `research/curated-influencer-references-2026-10-31` at `c033fb2` to integrate its six locked illustration boards and source proposal pack.
+- Added a separate Direction review page. Six assignments begin `pending_owner_review`; source IDs, evidence URLs, and board directions are stored in the database and integrity-checked against the committed pack. Approval requires confirmation of the exact assignment ID.
+- Added encrypted, version-specific identity reference uploads. Original/authorized face and body assets require rights notes and a reviewer decision. Storage uses AES-256-GCM with a separate `IDENTITY_ASSET_ENCRYPTION_KEY`; private files are served only to an authenticated admin.
+- New briefs require an approved assignment ID. Brief records capture intended shot and an immutable source snapshot. Manual research and trend submissions remain proposal records rather than automatic brief sources.
+- Generation requires a draft brief, current approved assignment, approved face and body references for the matching persona version, an explicit selected image reference, and explicit spend authorization. The worker repeats these checks and reads the encrypted private reference before calling Fine Photo Gen's image-edit route.
+- Approval, scheduling, export, and publishing require the assignment to remain approved and source-integrity checks to pass. Live publishing remains paused by default; no live post or image-generation request was made.
+- Replaced automatic brief seeding with six pending assignments. Annual strategies remain seeded. Existing historical unassigned briefs, if present in a previously populated database, remain readable but cannot be approved, generated, scheduled, exported, or published.
+- Added source-quality labels for direct-video examples versus index-only post descriptions. No creator/post engagement metrics or photographic bytes were imported. The operational research library remains empty unless an admin submits permitted records.
+
+### Prototype v2 validation
+
+- `npx prisma validate` with a local placeholder `DATABASE_URL`: passed.
+- `npx prisma generate`: passed during the production build.
+- `npm run typecheck`: passed.
+- `npm run test`: 40 tests passed across 11 files.
+- `npm audit --omit=dev`: zero production dependency vulnerabilities reported.
+- `npm run build`: passed, including the authenticated assignment board and identity asset routes.
+- Prisma migration diff from pushed `main` to the updated schema matched the additive migration. No connected database was available to apply it.
+- Docker/Compose, PostgreSQL/Redis runtime, Fine Photo Gen generation, and live social publication remain unverified in this workspace.

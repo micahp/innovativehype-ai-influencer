@@ -3,58 +3,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { prisma } from "../src/lib/prisma";
 import { annualStrategy } from "../src/lib/strategy";
-
-type SeedContent = { title: string; concept: string; pillar: string; format: string; caption: string; prompt: string };
-
-const gamerContent: SeedContent[] = [
-  { title: "The desk reset that starts a side quest", concept: "A playful setup-reset ritual that gives viewers a useful cable-management idea.", pillar: "Setup Lab", format: "single_image", caption: "I sat down to fix one cable and somehow gave the whole desk a side quest. Tiny reset, much calmer queue. What is the one setup detail you always mean to tidy?", prompt: "Original editorial photo of Mira Byte, a fictional adult plus-size gamer with warm olive skin, dark espresso bob with teal underlayer and consistent body proportions, organizing a colorful PC gaming desk, candid mid-action composition, teal and violet accents, practical window light, no logos, 4:5 portrait." },
-  { title: "A game-night poll with no wrong loadout", concept: "Invite the audience to describe their ideal low-pressure co-op night.", pillar: "Co-op Energy", format: "text_post", caption: "Co-op night rules: snacks within reach, one person reads the map, and nobody says ‘I know a shortcut’ without evidence. What is your essential party role?", prompt: "No image required; text-only audience poll. Keep the fictional creator voice playful and welcoming." },
-  { title: "Three colors, one original cosplay concept", concept: "Show a palette study that translates a game genre into original clothing without copying a character.", pillar: "Style Queue", format: "carousel", caption: "A little sci-fi, a little streetwear, and absolutely no borrowed character design. I started with teal, charcoal, and one bright coral detail. Which palette should get the next sketch?", prompt: "Original fashion editorial of Mira Byte in a fully original sci-fi streetwear outfit using teal, charcoal and coral, plus-size body and signature teal-underlayer bob consistent, neutral studio backdrop, no franchise marks or copied costume, varied full-body angle." },
-  { title: "The patch-note reading face", concept: "A reaction portrait about the familiar ritual of opening patch notes before playing.", pillar: "Play Notes", format: "single_image", caption: "Me opening patch notes with the confidence of someone who will definitely read every line. Be honest: do you read the notes first or discover the changes mid-match?", prompt: "Expressive portrait of Mira Byte, same fictional adult face and hair, seated at a softly lit gaming desk with a monitor glow, amused focused expression, medium framing, no visible game interface text, no real brand logos." },
-  { title: "A comfortable fit for a long session", concept: "Fashion-led outfit notes that prioritize comfort and personal style.", pillar: "Style Queue", format: "single_image", caption: "Today's queue is an oversized graphic tee, structured jacket, and jeans that let me actually sit comfortably. Style should work with the hobby, not against it. What's your reliable long-session outfit?", prompt: "Full-length fashion editorial of Mira Byte wearing original oversized tee, structured violet jacket and high-waisted dark jeans, comfortable confident pose beside a gaming setup, maintain exact character identity and proportions, warm studio light." },
-  { title: "A practical PC setup explainer", concept: "Explain one general desk setup principle without making unsupported product claims.", pillar: "Setup Lab", format: "carousel", caption: "A setup tip that costs nothing: put the thing you reach for most where your hand naturally lands. Ergonomics is often just noticing the tiny daily annoyances. What do you reach across your desk for too often?", prompt: "Three-panel original editorial carousel showing Mira Byte adjusting a generic desk layout, close detail of keyboard reach, then relaxed seated framing, no brand marks, consistent face and body, soft teal light." },
-  { title: "A cozy corner for handheld play", concept: "Create a lifestyle scene around a comfortable handheld gaming nook.", pillar: "Off-screen Reset", format: "single_image", caption: "Handheld corner, blanket, charger already where it belongs. This is a fictional cozy setup concept, but I would absolutely keep the charger in reach. What makes your play spot feel inviting?", prompt: "Mira Byte in an original cozy reading-and-gaming nook holding a generic unbranded handheld device, soft cream and teal textiles, plus-size proportions and facial identity stable, candid seated composition, no event or real-use implication." },
-  { title: "A meme about the ‘one more run’ promise", concept: "Use a short original gamer-humor caption with an expressive visual, not a copied meme template.", pillar: "Co-op Energy", format: "text_post", caption: "‘One more run’ is a time unit with deeply unreliable math. What phrase tells your friends the session is definitely not ending yet?", prompt: "No image required; text-only original joke. Do not quote or reproduce a known meme." },
-  { title: "A camera-angle setup comparison", concept: "Test whether a wider environmental view or a close detail makes setup posts more useful.", pillar: "Setup Lab", format: "single_image", caption: "I like a setup photo that shows the little choices, not just the glowing lights. Today’s experiment: wider room context, same desk. Does this angle help you picture the space?", prompt: "Wide environmental photo of Mira Byte beside a modest customized PC desk, room context visible, balanced practical lighting, teal-violet color accents, same approved identity, no fake brand logos." },
-  { title: "A fictional game genre moodboard", concept: "Connect a chosen moodboard to original wardrobe and background styling.", pillar: "Style Queue", format: "carousel", caption: "Moodboard prompt: if a cozy puzzle game had a streetwear color story, what would you put in it? Mine starts with cream, muted teal, and one playful coral accent.", prompt: "Original 3-frame fashion moodboard starring Mira Byte, consistent fictional adult appearance, cream teal coral streetwear, abstract puzzle-inspired shapes with no copyrighted symbols, editorial lighting." },
-  { title: "Ask the audience for an indie-game shortlist", concept: "Request recommendations while making clear the creator has not played the suggested games yet.", pillar: "Play Notes", format: "text_post", caption: "I’m building a community shortlist of indie games to research next. I haven’t played your suggestions yet, so tell me what makes each one worth a look. What should be on the list?", prompt: "No image required. Do not imply any game was played or reviewed." },
-  { title: "An original controller-color study", concept: "Show original prop styling with no product endorsements or copied branding.", pillar: "Setup Lab", format: "single_image", caption: "Tiny design question: do you like your desk accessories to match perfectly or look collected over time? I’m leaning toward the second one today.", prompt: "Editorial close-up of Mira Byte at her desk comparing two generic unbranded controller color palettes, keep her face recognizable in frame, teal and coral prop accents, no logos, natural skin and hands." },
-  { title: "A body-confidence style note", concept: "Connect fit and comfort to self-expression without turning the character into a generic photo subject.", pillar: "Off-screen Reset", format: "single_image", caption: "A good outfit gives me room to move, sit, laugh, and take up space. That's the whole review. What makes an outfit feel like yours?", prompt: "Warm full-body portrait of Mira Byte in confident original gamer streetwear, natural plus-size body proportions, relaxed stance, expressive face, soft coral wall, non-sexualized fashion framing." },
-  { title: "A creator question about desk sound", concept: "Use a sensory detail to open conversation about setup choices.", pillar: "Co-op Energy", format: "text_post", caption: "The best setup detail might be the one you hear less: quieter keys, a calmer fan, or just fewer things rattling. What sound would you remove from your space first?", prompt: "No image required. Keep this as a conversational question, not a product recommendation." },
-  { title: "A small-space gaming setup", concept: "Show a compact setup concept and ask for audience adaptations.", pillar: "Setup Lab", format: "single_image", caption: "Small desk, big side-quest energy. This layout keeps the essentials close and leaves a little elbow room. What would you change for your own space?", prompt: "Mira Byte beside an original compact gaming desk in a small tidy room, practical layout, consistent plus-size figure and signature hair, visible open desk space, no product logos." },
-  { title: "A fictional fantasy-festival outfit", concept: "Develop an original cosplay-adjacent fashion concept without claiming attendance or depicting a real character.", pillar: "Style Queue", format: "single_image", caption: "Outfit concept only: if a fantasy festival had a modern streetwear dress code, I’d start with layered textures and one dramatic color. No real event, just a sketch in outfit form.", prompt: "Original fantasy-inspired streetwear editorial of Mira Byte, no recognizable franchise elements, plus-size proportions consistent, layered textures, deep teal and copper palette, neutral studio, full-body." },
-  { title: "A gentle community debate about tutorials", concept: "Compare quick tips with longer walkthroughs as an audience-preference question.", pillar: "Play Notes", format: "text_post", caption: "When you look for a setup tip, do you want the 20-second version or the full ‘show me every step’ walkthrough? I can make room for both; tell me what you actually save.", prompt: "No image required; audience interaction prompt." },
-  { title: "A desk-lighting experiment", concept: "Show a before-and-after lighting concept and record it as a future format test.", pillar: "Setup Lab", format: "carousel", caption: "Same desk, two lighting moods: practical daylight and a softer evening glow. This is a composition experiment, not a gear review. Which frame feels easier to settle into?", prompt: "Two original images of Mira Byte at the same generic gaming setup under daylight and soft evening light; maintain same face, hair, body and camera position; no logos or screen text." },
-  { title: "An audience-led co-op role list", concept: "Collect playful community descriptions without soliciting spam replies.", pillar: "Co-op Energy", format: "text_post", caption: "Choose your co-op archetype: map reader, inventory goblin, morale support, or ‘I pressed the button and now there is a boss.’ Add your own if I missed it.", prompt: "No image required; invite thoughtful comments, no mass-engagement bait." },
-  { title: "The first month format check-in", concept: "Explain that format decisions should follow observed analytics rather than assumptions.", pillar: "Play Notes", format: "single_image", caption: "Month-one note to future me: keep the ideas that people actually respond to, and don't confuse a pretty frame with a useful post. Which series would you like to see continue?", prompt: "Reflective portrait of Mira Byte at her desk, warm practical lighting, a notebook with no legible text, same consistent fictional identity, relaxed expression, medium shot." }
-];
-
-const fitnessContent: SeedContent[] = [
-  { title: "The gym-bag edit", concept: "Show a practical bag layout as a styling and organization idea without brand mentions.", pillar: "Gym Edit", format: "single_image", caption: "A tiny gym-bag edit: water, a towel, and only the things I actually reach for. No miracle kit, just fewer mystery items rattling around. What always makes your bag cut?", prompt: "Editorial lifestyle photo of Sana Vale, fictional adult with deep warm-brown skin, long dark curls and natural slim athletic proportions, organizing a generic gym bag on a bench, sage and espresso palette, no logos, daylight, 4:5 portrait." },
-  { title: "A gentle warm-up reminder", concept: "Share a general movement concept with safe framing and no individual prescription.", pillar: "Move Well", format: "text_post", caption: "A warm-up can be simple: start easy, move through a comfortable range, and give yourself time to notice how you feel. This is general content, not an individualized plan. What helps you ease into movement?", prompt: "No image required; general educational copy only." },
-  { title: "A soft recovery-day scene", concept: "Create an editorial recovery visual, explicitly not a claim of personal experience.", pillar: "Recovery Practice", format: "single_image", caption: "Recovery-day moodboard: soft light, comfortable layers, and permission to choose the gentler option. This is an editorial concept, not a claim about a real routine. What does a restful day look like for you?", prompt: "Sana Vale in a calm fictional recovery-day editorial setting with sage knit layers and a yoga mat rolled nearby, natural skin texture, same face and hair identity, no medical claims or exercise demonstration." },
-  { title: "Two makeup palettes, one vote", concept: "Ask the audience to choose between neutral and lilac color directions.", pillar: "Beauty Notes", format: "carousel", caption: "A/B palette check: warm copper tones or soft lilac? Both are original makeup concepts, and neither needs a complicated routine. Which one should get the step-by-step breakdown?", prompt: "Two-frame beauty editorial of the same fictional Sana Vale face with natural textured skin: one warm copper makeup look, one soft lilac look, consistent lighting and facial identity, no retouching that erases skin texture." },
-  { title: "A repeatable activewear combination", concept: "Explain outfit layering choices focused on comfort and function.", pillar: "Gym Edit", format: "single_image", caption: "Matching set, light layer, comfortable shoes: the outfit formula is allowed to be boring if it helps you get on with your day. What piece makes your gym clothes feel more like you?", prompt: "Full-body editorial portrait of Sana Vale in coordinated sage activewear and a soft neutral layer, natural athletic proportions, relaxed non-sexualized pose, daylight studio, consistent face, hair and skin tone." },
-  { title: "Reading a skincare label", concept: "Introduce general label-reading literacy without recommending a product or making medical claims.", pillar: "Beauty Notes", format: "carousel", caption: "A low-pressure label-reading habit: look at the product type, the ingredient list, and the directions before deciding whether it fits your routine. This isn't medical advice or a product endorsement. What label detail do you usually check first?", prompt: "Three-frame original beauty editorial with Sana Vale holding a generic unbranded skincare container, close-up of label area with no readable text, natural skin texture and consistent identity, bright soft light." },
-  { title: "A movement break for a busy day", concept: "Offer an adaptable general movement break with permission to skip or modify.", pillar: "Move Well", format: "single_image", caption: "A movement break doesn't have to become a whole workout. A few comfortable shoulder rolls or a short walk can be enough for a reset; adapt or skip anything that doesn't suit you.", prompt: "Sana Vale in a bright home studio demonstrating a gentle standing shoulder mobility position with clear comfortable posture, athletic proportions natural, no weights, same identity, non-medical editorial context." },
-  { title: "A practical rest-day poll", concept: "Prompt audience reflection on what helps them make room for recovery.", pillar: "Recovery Practice", format: "text_post", caption: "Rest-day vote: quiet morning, long walk, creative hobby, or absolutely no plan? Pick your version; there is no universal recovery routine.", prompt: "No image required; conversational poll, not a health claim." },
-  { title: "A natural-light makeup close-up", concept: "Show texture and technique with realistic skin and no transformation claim.", pillar: "Beauty Notes", format: "single_image", caption: "Today's makeup note is mostly about the light: a soft base, brushed brows, and a copper accent that still looks like skin. Want the product-free step order?", prompt: "Close-up portrait of Sana Vale in natural daylight with soft copper eye makeup, preserve pores and natural skin texture, same deep warm-brown skin, dark eyes, dimple and curls, no before-and-after framing." },
-  { title: "A gym-to-street layer", concept: "Show a versatile outfit idea and keep any product use fictional and non-promotional.", pillar: "Gym Edit", format: "single_image", caption: "A light layer changes the whole silhouette from gym-basic to everyday. Outfit concept only—no product endorsement hidden in the seams. What color would you add?", prompt: "Original gym-to-street editorial of Sana Vale wearing sage technical layers under a warm-white overshirt, natural athletic shape, same character identity, urban neutral background, no logos." },
-  { title: "A skin-barrier basics explainer", concept: "Use cautious, general language and direct viewers to qualified care for personal concerns.", pillar: "Beauty Notes", format: "text_post", caption: "A general skincare reminder: more steps aren't automatically better, and irritation is a good reason to pause and seek qualified advice. This is educational content, not diagnosis. Which routine step do you keep simplest?", prompt: "No image required; avoid individualized medical advice or claims." },
-  { title: "A beginner-friendly form checklist", concept: "Share a short checklist for making movement demonstrations clearer and safer.", pillar: "Move Well", format: "carousel", caption: "For a movement demo, clarity beats speed: show the setup, use a comfortable range, and name an easier option. This is a general production checklist, not coaching for an individual body.", prompt: "Three-frame movement demonstration featuring Sana Vale with neutral background: starting position, controlled comfortable range, easier no-equipment option; correct anatomy, natural athletic proportions, same identity." },
-  { title: "A soft lilac makeup detail", concept: "Focus on one small color detail rather than a full transformation.", pillar: "Beauty Notes", format: "single_image", caption: "One lilac detail can do all the talking. I like a look that leaves room for skin texture and doesn't ask for an hour of blending. Would you wear this as a liner or a wash?", prompt: "Portrait editorial of Sana Vale with a soft lilac eye accent, natural textured skin, exact facial features and curls preserved, muted lilac and warm white palette, simple background." },
-  { title: "A five-minute mobility concept", concept: "Show a short general mobility sequence as a concept, with adaptation language.", pillar: "Recovery Practice", format: "single_image", caption: "A five-minute mobility idea for a content card: choose two comfortable movements, go slowly, and stop if something hurts. Keep it adaptable; bodies and needs differ.", prompt: "Sana Vale in a bright studio in a gentle seated mobility position beside a clean text-free mat, safe neutral posture, same adult identity, natural proportions, no claim of personal workout." },
-  { title: "A fictional desk-to-gym transition", concept: "Tell a visual story about a routine transition without claiming a real daily event.", pillar: "Everyday Rhythm", format: "carousel", caption: "Visual story idea: the desk-to-gym transition, told through the small choices—close the laptop, pack a layer, pick a playlist. Fictional scene, very real calendar math. What helps you switch modes?", prompt: "Three-frame editorial story starring Sana Vale: closing a laptop, packing a generic gym bag, arriving at an empty neutral studio; consistent identity and wardrobe, no real event claims, no logos." },
-  { title: "A beauty routine that leaves room", concept: "Promote adaptable routines and choice without product claims.", pillar: "Beauty Notes", format: "text_post", caption: "A routine is allowed to have a short version. Cleanse, moisturize, stop there if that's what works for you; individual skin needs differ, so this isn't a prescription.", prompt: "No image required; general wellness language with no product recommendation." },
-  { title: "A form-demo camera angle test", concept: "Compare a side view with a three-quarter angle for instructional clarity.", pillar: "Move Well", format: "carousel", caption: "Camera test for a movement demo: side view for range, three-quarter view for context. The best angle is the one that makes the movement easiest to understand. Which would you keep?", prompt: "Two matching instructional frames featuring Sana Vale demonstrating a gentle bodyweight hinge from side and three-quarter angles, correct neutral movement, same face and clothing, bright studio, no added weights." },
-  { title: "A calm evening reset", concept: "Create a non-prescriptive wellness visual with no sleep or health promises.", pillar: "Everyday Rhythm", format: "single_image", caption: "Evening reset concept: set out tomorrow's layer, lower the lights, and leave one thing undone on purpose. A routine can support a day without fixing everything.", prompt: "Sana Vale in a warm evening home editorial setting folding a neutral activewear layer, natural curly hair and skin, consistent identity, restful candid composition, no product labels." },
-  { title: "Audience Q&A on content priorities", concept: "Ask whether followers want more tutorials, movement concepts, or beauty breakdowns.", pillar: "Everyday Rhythm", format: "text_post", caption: "What would be most useful next: a makeup look breakdown, a gentle movement concept, or an outfit formula? I want the calendar to reflect actual requests, not guesses.", prompt: "No image required; audience interaction question." },
-  { title: "The first month format check-in", concept: "Explain the difference between observed analytics and assumptions about creative performance.", pillar: "Move Well", format: "single_image", caption: "Month-one note to future me: a polished frame is not proof that a format works. Keep the ideas people respond to, track exposure when available, and leave the rest as a hypothesis.", prompt: "Reflective portrait of Sana Vale in a bright natural-light studio holding a notebook with no legible writing, same face, curls, skin and body proportions, calm expression." }
-];
+import { lockedCreativeAssignments } from "../src/lib/creative-assignments";
 
 const personas = [
-  { slug: "mira-byte", json: "mira-byte.v1.json", content: gamerContent },
-  { slug: "sana-vale", json: "sana-vale.v1.json", content: fitnessContent }
+  { slug: "mira-byte", json: "mira-byte.v1.json" },
+  { slug: "sana-vale", json: "sana-vale.v1.json" }
 ];
 
 function canonical(value: unknown): string {
@@ -67,6 +20,7 @@ function canonical(value: unknown): string {
 }
 
 async function main() {
+  const influencers = new Map<string, string>();
   for (const entry of personas) {
     const spec = JSON.parse(await readFile(path.join(process.cwd(), "data/personas", entry.json), "utf8")) as Record<string, unknown>;
     const influencer = await prisma.influencer.upsert({
@@ -74,11 +28,12 @@ async function main() {
       update: { name: String(spec.name), suggestedHandle: String((spec.handleSuggestions as string[])[0]), bio: String(spec.bio) },
       create: { slug: entry.slug, name: String(spec.name), suggestedHandle: String((spec.handleSuggestions as string[])[0]), bio: String(spec.bio) }
     });
+    influencers.set(entry.slug, influencer.id);
 
     const latestPersona = await prisma.personaVersion.findFirst({ where: { influencerId: influencer.id }, orderBy: { version: "desc" } });
     let personaVersion = latestPersona;
     if (!latestPersona) {
-      personaVersion = await prisma.personaVersion.create({ data: { influencerId: influencer.id, version: 1, spec: spec as Prisma.InputJsonValue, notes: "Initial fictional identity specification. Canonical visual references are pending generation and human approval." } });
+      personaVersion = await prisma.personaVersion.create({ data: { influencerId: influencer.id, version: 1, spec: spec as Prisma.InputJsonValue, notes: "Initial fictional identity specification. Canonical visual references are pending owner upload and human approval." } });
     } else if (canonical(latestPersona.spec) !== canonical(spec)) {
       personaVersion = await prisma.personaVersion.create({ data: { influencerId: influencer.id, version: latestPersona.version + 1, spec: spec as Prisma.InputJsonValue, notes: "Seed persona specification changed; previous version retained for audit." } });
     }
@@ -98,36 +53,31 @@ async function main() {
         create: { influencerId: influencer.id, platform, status: "not_connected" }
       });
     }
+  }
 
-    for (let index = 0; index < entry.content.length; index += 1) {
-      const item = entry.content[index];
-      const existing = await prisma.contentBrief.findFirst({ where: { influencerId: influencer.id, title: item.title } });
-      if (existing) continue;
-      const offset = index < 10 ? Math.floor(index * 13 / 9) : 14 + Math.floor((index - 10) * 14 / 9);
-      const scheduledFor = new Date(Date.UTC(2026, 10, 2 + offset, 16, 0));
-      const platform = index % 5 === 1 || index % 5 === 4 ? "x" : "instagram";
-      await prisma.contentBrief.create({
-        data: {
-          influencerId: influencer.id,
-          personaVersionId: personaVersion?.id,
-          title: item.title,
-          concept: item.concept,
-          platform,
-          format: item.format,
-          contentPillar: item.pillar,
-          captionDraft: item.caption,
-          imagePrompt: item.prompt,
-          negativePrompt: String((spec.generation as { negativePrompt: string }).negativePrompt),
-          scheduledFor,
-          status: "draft"
-        }
-      });
-    }
+  for (const assignment of lockedCreativeAssignments) {
+    const influencerId = influencers.get(assignment.influencerSlug);
+    if (!influencerId) throw new Error(`No seeded persona exists for assignment ${assignment.id}.`);
+    await prisma.creativeAssignment.upsert({
+      where: { id: assignment.id },
+      update: {},
+      create: {
+        id: assignment.id,
+        influencerId,
+        boardPath: assignment.boardPath,
+        direction: assignment.direction,
+        creatorIds: assignment.creatorIds as Prisma.InputJsonValue,
+        postIds: assignment.postIds as Prisma.InputJsonValue,
+        photoSourceIds: assignment.photoSourceIds as Prisma.InputJsonValue,
+        evidenceSnapshot: assignment.evidenceSnapshot as Prisma.InputJsonValue,
+        status: "pending_owner_review"
+      }
+    });
   }
 
   await prisma.systemSetting.upsert({ where: { key: "publishing_mode" }, update: {}, create: { key: "publishing_mode", value: "human_approval" } });
   await prisma.systemSetting.upsert({ where: { key: "publishing_paused" }, update: {}, create: { key: "publishing_paused", value: true } });
-  console.log("Seeded the two fictional creator identities, versioned personas, initial annual strategies, and 30-day evergreen calendars.");
+  console.log("Seeded the two fictional identities, annual strategies, and six pending creative assignments. No content briefs or production jobs were selected or created.");
 }
 
 main().catch((error) => {

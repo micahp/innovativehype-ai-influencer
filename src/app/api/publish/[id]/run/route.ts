@@ -8,6 +8,7 @@ import { decryptSocialToken } from "@/lib/social-token";
 import { publishInstagramImage } from "@/lib/publishers/instagram";
 import { publishXPost } from "@/lib/publishers/x";
 import { PublisherError } from "@/lib/publishers/types";
+import { assignmentBlockReason } from "@/lib/creative-assignments";
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   if (!isAuthenticated(request.headers.get("cookie")) && !isWorkerAuthorized(request.headers.get("authorization"))) return NextResponse.json({ error: "Authentication required" }, { status: 401 });
@@ -16,9 +17,13 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
   const { id } = await context.params;
   const scheduled = await prisma.scheduledPost.findUnique({
     where: { id },
-    include: { contentBrief: { include: { influencer: true } }, mediaAsset: true, publishedPost: true }
+    include: { contentBrief: { include: { influencer: true, creativeAssignment: true } }, mediaAsset: true, publishedPost: true }
   });
   if (!scheduled) return NextResponse.json({ error: "Scheduled post not found" }, { status: 404 });
+  const assignment = scheduled.contentBrief.creativeAssignment;
+  if (!assignment || scheduled.contentBrief.assignmentId !== assignment.id || assignment.influencerId !== scheduled.contentBrief.influencerId) return NextResponse.json({ error: "This post has no valid owner-approved creative assignment." }, { status: 409 });
+  const assignmentProblem = assignmentBlockReason({ id: assignment.id, influencerSlug: scheduled.contentBrief.influencer.slug, status: assignment.status, creatorIds: assignment.creatorIds, postIds: assignment.postIds, photoSourceIds: assignment.photoSourceIds, evidenceSnapshot: assignment.evidenceSnapshot });
+  if (assignmentProblem) return NextResponse.json({ error: assignmentProblem }, { status: 409 });
   if (scheduled.publishedPost) {
     const unresolved = scheduled.publishedPost.publicationStatus !== "published";
     return NextResponse.json({ publishedPost: scheduled.publishedPost, duplicate: !unresolved, needsReconciliation: unresolved }, { status: unresolved ? 409 : 200 });

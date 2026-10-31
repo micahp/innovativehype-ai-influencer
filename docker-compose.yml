@@ -54,8 +54,11 @@ services:
     environment:
       DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
       REDIS_URL: redis://redis:6379
+      MEDIA_STORAGE_DIR: /app/storage
     ports:
       - "3000:3000"
+    volumes:
+      - ./storage:/app/storage
     depends_on:
       db:
         condition: service_healthy
@@ -75,6 +78,7 @@ services:
       DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD:-studio}@db:5432/ai_influencer_studio?schema=public
       REDIS_URL: redis://redis:6379
       APP_BASE_URL: http://app:3000
+      MEDIA_STORAGE_DIR: /app/storage
     depends_on:
       db:
         condition: service_healthy
@@ -87,6 +91,8 @@ services:
       app:
         condition: service_started
     command: ["npm", "run", "worker"]
+    volumes:
+      - ./storage:/app/storage
 
 volumes:
   studio-db:

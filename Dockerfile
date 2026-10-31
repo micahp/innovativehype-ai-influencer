@@ -21,6 +21,8 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/data ./data
+COPY --from=builder /app/research ./research
+COPY --from=builder /app/assets ./assets
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
 EXPOSE 3000
 CMD ["node", "server.js"]

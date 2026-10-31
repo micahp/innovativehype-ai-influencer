@@ -26,6 +26,8 @@ model Influencer {
   experiments    Experiment[]
   agentRuns      AgentRun[]
   providerCosts  ProviderCost[]
+  creativeAssignments CreativeAssignment[]
+  identityReferenceAssets IdentityReferenceAsset[]
 }
 
 model PersonaVersion {
@@ -36,8 +38,52 @@ model PersonaVersion {
   notes       String?
   createdAt   DateTime   @default(now())
   influencer  Influencer @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  identityReferenceAssets IdentityReferenceAsset[]
 
   @@unique([influencerId, version])
+}
+
+model CreativeAssignment {
+  id               String         @id
+  influencerId     String
+  boardPath        String
+  direction        String
+  creatorIds       Json
+  postIds          Json
+  photoSourceIds   Json
+  evidenceSnapshot Json
+  status           String         @default("pending_owner_review")
+  reviewedAt       DateTime?
+  reviewedBy       String?
+  reviewNotes      String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  influencer       Influencer     @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  briefs           ContentBrief[]
+
+  @@index([influencerId, status])
+}
+
+model IdentityReferenceAsset {
+  id               String         @id @default(cuid())
+  influencerId     String
+  personaVersionId String
+  kind             String
+  storageKey       String         @unique
+  contentType      String
+  byteSize         Int
+  sha256           String
+  rightsBasis      String
+  rightsNotes      String?
+  status           String         @default("pending_review")
+  reviewedAt       DateTime?
+  reviewedBy       String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  influencer       Influencer     @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  personaVersion   PersonaVersion @relation(fields: [personaVersionId], references: [id], onDelete: Cascade)
+
+  @@index([influencerId, personaVersionId, kind, status])
 }
 
 model SocialAccount {
@@ -168,6 +214,9 @@ model ContentBrief {
   personaVersionId String?
   referencePostId String?
   trendSignalId   String?
+  assignmentId    String?
+  intendedShot    String?
+  sourceSnapshot  Json?
   title           String
   concept         String
   platform        String
@@ -183,6 +232,7 @@ model ContentBrief {
   influencer      Influencer       @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   referencePost   ReferencePost?   @relation(fields: [referencePostId], references: [id], onDelete: SetNull)
   trendSignal     TrendSignal?     @relation(fields: [trendSignalId], references: [id], onDelete: SetNull)
+  creativeAssignment CreativeAssignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
   assets          MediaAsset[]
   generationJobs  GenerationJob[]
   approvals       ApprovalRecord[]

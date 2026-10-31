@@ -1,5 +1,6 @@
 .git
 .next
+storage
 node_modules
 coverage
 .env

@@ -7,9 +7,10 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
   const { id } = await context.params;
   const scheduled = await prisma.scheduledPost.findUnique({
     where: { id },
-    include: { contentBrief: { include: { influencer: true } }, mediaAsset: true }
+    include: { contentBrief: { include: { influencer: true, creativeAssignment: true } }, mediaAsset: true }
   });
   if (!scheduled) return NextResponse.json({ error: "Scheduled post not found" }, { status: 404 });
+  if (!scheduled.contentBrief.assignmentId || !scheduled.contentBrief.creativeAssignment || scheduled.contentBrief.creativeAssignment.status !== "approved" || scheduled.contentBrief.creativeAssignment.influencerId !== scheduled.contentBrief.influencerId) return NextResponse.json({ error: "Only content tied to a current owner-approved assignment can be exported." }, { status: 409 });
   return NextResponse.json({
     platform: scheduled.platform,
     scheduledFor: scheduled.scheduledFor,

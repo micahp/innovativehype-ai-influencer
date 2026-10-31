@@ -1,13 +1,16 @@
 import { Worker } from "bullmq";
 import { Prisma } from "@prisma/client";
-import { randomInt } from "node:crypto";
+import { createHash, randomInt } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { prisma } from "@/lib/prisma";
 import { getMediaProvider } from "@/lib/providers/fine-photo-gen";
 import { getStudioQueue, redisConnection, STUDIO_QUEUE } from "@/lib/queue";
+import { assignmentBlockReason, hasReviewedCanonicalFaceAndBody } from "@/lib/creative-assignments";
+import { decryptIdentityAsset, identityStoragePath } from "@/lib/identity-storage";
 import { isLivePublishFormatSupported } from "@/lib/workflow";
 
 type WorkData = { generationJobId?: string; scheduledPostId?: string };
-type GenerationRequest = { candidateCount?: number; seed?: number; referenceImageUrl?: string; aspectRatio?: "1:1" | "16:9" | "9:16" | "3:4" | "4:3" };
+type GenerationRequest = { candidateCount?: number; seed?: number; identityReferenceAssetId?: string; spendAuthorized?: boolean; aspectRatio?: "1:1" | "16:9" | "9:16" | "3:4" | "4:3" };
 
 const worker = new Worker<WorkData>(STUDIO_QUEUE, async (job) => {
   if (job.name === "publish") {
@@ -24,19 +27,43 @@ const worker = new Worker<WorkData>(STUDIO_QUEUE, async (job) => {
   if (!job.data.generationJobId) throw new Error("Generation job id is missing.");
   const record = await prisma.generationJob.findUnique({
     where: { id: job.data.generationJobId },
-    include: { contentBrief: { include: { influencer: true } } }
+    include: { contentBrief: { include: { influencer: true, creativeAssignment: true } } }
   });
   if (!record) throw new Error(`Generation job ${job.data.generationJobId} was not found`);
   if (record.status === "completed") return { alreadyCompleted: true };
 
   await prisma.generationJob.update({ where: { id: record.id }, data: { status: "running", startedAt: new Date(), attempts: { increment: 1 }, error: null } });
   const request = record.request as unknown as GenerationRequest;
+  try {
+  if (!["draft", "changes_requested"].includes(record.contentBrief.status)) throw new Error("Generation stopped: the brief is no longer in draft review.");
+  const assignment = record.contentBrief.creativeAssignment;
+  if (!assignment || record.contentBrief.assignmentId !== assignment.id || assignment.influencerId !== record.contentBrief.influencerId) throw new Error("Generation stopped: the brief has no valid owner-approved assignment.");
+  const assignmentProblem = assignmentBlockReason({
+    id: assignment.id,
+    influencerSlug: record.contentBrief.influencer.slug,
+    status: assignment.status,
+    creatorIds: assignment.creatorIds,
+    postIds: assignment.postIds,
+    photoSourceIds: assignment.photoSourceIds,
+    evidenceSnapshot: assignment.evidenceSnapshot
+  });
+  if (assignmentProblem) throw new Error(`Generation stopped: ${assignmentProblem}`);
+  if (request.spendAuthorized !== true) throw new Error("Generation stopped: no explicit provider-spend authorization was recorded.");
+  if (!request.identityReferenceAssetId) throw new Error("Generation stopped: an approved character reference was not selected.");
+  const [identityAsset, approvedFace, approvedBody] = await Promise.all([
+    prisma.identityReferenceAsset.findFirst({ where: { id: request.identityReferenceAssetId, influencerId: record.contentBrief.influencerId, personaVersionId: record.contentBrief.personaVersionId ?? "", status: "approved" } }),
+    prisma.identityReferenceAsset.findFirst({ where: { influencerId: record.contentBrief.influencerId, personaVersionId: record.contentBrief.personaVersionId ?? "", kind: "face", status: "approved" }, select: { id: true } }),
+    prisma.identityReferenceAsset.findFirst({ where: { influencerId: record.contentBrief.influencerId, personaVersionId: record.contentBrief.personaVersionId ?? "", kind: "body", status: "approved" }, select: { id: true } })
+  ]);
+  if (!hasReviewedCanonicalFaceAndBody({ faceApproved: Boolean(approvedFace), bodyApproved: Boolean(approvedBody) }) || !identityAsset) throw new Error("Generation stopped: reviewed face and body canon is incomplete or the selected reference is no longer approved.");
+  const referenceBytes = decryptIdentityAsset(await readFile(identityStoragePath(identityAsset.storageKey)));
+  if (createHash("sha256").update(referenceBytes).digest("hex") !== identityAsset.sha256) throw new Error("Generation stopped: the selected character reference failed its integrity check.");
+  const referenceImageUrl = `data:${identityAsset.contentType};base64,${referenceBytes.toString("base64")}`;
   const provider = getMediaProvider();
   const candidateCount = Math.max(1, Math.min(4, request.candidateCount ?? 1));
   const seedBase = request.seed ?? randomInt(0, 2 ** 32);
   const outputs = [];
 
-  try {
     for (let index = 0; index < candidateCount; index += 1) {
       const seed = (seedBase + index) % (2 ** 32);
       const output = await provider.generate({
@@ -45,7 +72,7 @@ const worker = new Worker<WorkData>(STUDIO_QUEUE, async (job) => {
         negativePrompt: record.contentBrief.negativePrompt,
         aspectRatio: request.aspectRatio ?? "3:4",
         seed,
-        referenceImageUrl: request.referenceImageUrl
+        referenceImageUrl
       });
       const asset = await prisma.mediaAsset.create({
         data: {
@@ -57,7 +84,7 @@ const worker = new Worker<WorkData>(STUDIO_QUEUE, async (job) => {
           seed: BigInt(output.seed),
           provider: output.provider,
           model: output.model,
-          metadata: output.metadata as Prisma.InputJsonValue,
+          metadata: { ...output.metadata, identityReferenceAssetId: identityAsset.id, identityReferenceSha256: identityAsset.sha256 } as Prisma.InputJsonValue,
           isMock: output.isMock
         }
       });
@@ -107,6 +134,7 @@ async function dispatchDuePublications() {
       contentBrief: {
         include: {
           influencer: { include: { socialAccounts: true } },
+          creativeAssignment: true,
           approvals: { orderBy: { createdAt: "desc" }, take: 1 }
         }
       }
@@ -116,6 +144,9 @@ async function dispatchDuePublications() {
   const queue = getStudioQueue();
   for (const post of due) {
     if (post.publishedPost) continue;
+    const assignment = post.contentBrief.creativeAssignment;
+    if (!assignment || post.contentBrief.assignmentId !== assignment.id || assignment.influencerId !== post.contentBrief.influencerId) continue;
+    if (assignmentBlockReason({ id: assignment.id, influencerSlug: post.contentBrief.influencer.slug, status: assignment.status, creatorIds: assignment.creatorIds, postIds: assignment.postIds, photoSourceIds: assignment.photoSourceIds, evidenceSnapshot: assignment.evidenceSnapshot })) continue;
     const approval = post.contentBrief.approvals[0];
     const account = post.contentBrief.influencer.socialAccounts.find((item) => item.platform === post.platform);
     const assetApproved = !post.mediaAssetId || (post.mediaAsset?.reviewStatus === "approved" && approval?.mediaAssetId === post.mediaAssetId && !post.mediaAsset.isMock);
