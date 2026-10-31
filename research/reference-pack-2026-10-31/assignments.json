@@ -1,0 +1,108 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-31",
+  "state": "requires_individual_owner_approval",
+  "assignments": [
+    {
+      "id": "M-01",
+      "persona": "mira-byte",
+      "board": "assets/references/mira/01-gaming-setup.svg",
+      "creators": [
+        "M01",
+        "M02"
+      ],
+      "posts": [
+        "P01",
+        "P02"
+      ],
+      "photos": [
+        "F01",
+        "F02"
+      ],
+      "direction": "Wide gaming station with neon teal/violet, RGB keyboard closeups, process then reveal. Avoid copied room layouts or real faces."
+    },
+    {
+      "id": "M-02",
+      "persona": "mira-byte",
+      "board": "assets/references/mira/02-streetwear-portrait.svg",
+      "creators": [
+        "M03",
+        "M05",
+        "M06"
+      ],
+      "posts": [],
+      "photos": [],
+      "direction": "Eye-level editorial plus-size gamer streetwear, visible full-body styling, stable character bust/hip proportions from canonical owner-approved identity pack only."
+    },
+    {
+      "id": "M-03",
+      "persona": "mira-byte",
+      "board": "assets/references/mira/03-fantasy-style.svg",
+      "creators": [
+        "M04",
+        "M07"
+      ],
+      "posts": [
+        "P04"
+      ],
+      "photos": [
+        "F03"
+      ],
+      "direction": "Original teal/violet/coral fantasy costume, materials-to-reveal story; no copyrighted costume or logo."
+    },
+    {
+      "id": "S-01",
+      "persona": "sana-vale",
+      "board": "assets/references/sana/01-gym-editorial.svg",
+      "creators": [
+        "S01",
+        "S02"
+      ],
+      "posts": [
+        "P06",
+        "P08"
+      ],
+      "photos": [
+        "F06",
+        "F09"
+      ],
+      "direction": "Sage/espresso gym editorial with visible equipment and full-body framing; no unverified instruction or false firsthand workout claim."
+    },
+    {
+      "id": "S-02",
+      "persona": "sana-vale",
+      "board": "assets/references/sana/02-makeup-closeup.svg",
+      "creators": [
+        "S04",
+        "S05",
+        "S06",
+        "S08"
+      ],
+      "posts": [
+        "P09",
+        "P10",
+        "P11"
+      ],
+      "photos": [
+        "F04",
+        "F05"
+      ],
+      "direction": "Close-up makeup editorial: texture, lit facial details, controlled lilac/copper palette and original look. Never clone facial features."
+    },
+    {
+      "id": "S-03",
+      "persona": "sana-vale",
+      "board": "assets/references/sana/03-recovery-flatlay.svg",
+      "creators": [
+        "S03",
+        "S07"
+      ],
+      "posts": [],
+      "photos": [
+        "F07",
+        "F08"
+      ],
+      "direction": "Warm natural daylight, flatlay practical gym bag/mat and beauty props. No fake endorsements or claims to use products."
+    }
+  ]
+}
