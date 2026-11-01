@@ -97,3 +97,9 @@ Updated: 2026-11-01 (prototype v3 creator-first slice)
 - Added `docs/creator-launch-pack.md` with the two creator bios and eight distinct concepts, each with separate Instagram and X copy. Concepts avoid real-world activity claims, endorsements, copyrighted character costumes, and invented metrics.
 - Rebuilt `/demo` around the characters, image candidates, and post drafts. It works without PostgreSQL, Redis, or platform credentials. The Cloudflare quick tunnel used for the former placeholder demo was stopped before these changes.
 - No Fine Photo Gen request or social publishing request was made. The live studio generation, approval, scheduling, and publishing workflows remain separate and gated.
+
+## Owner-directed lifestyle correction
+
+- Mira's fictional background now specifies hourly income of about $15–$20 per hour, a modest room, gradual low-cost upgrades, one basic monitor, and inexpensive cat-ear headphones. The current candidate image shows her bare-faced at that desk; the first setup post uses the same image.
+- Removed the earlier wealth-coded Mira setup images. Her future generations explicitly avoid luxury streamer rooms, multiple monitors, elaborate RGB, and high-end furniture.
+- Sana's lifestyle is specified as practical and non-luxury; her job and income remain unspecified rather than invented.

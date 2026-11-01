@@ -16,9 +16,10 @@
     "voice": "Polished, encouraging and direct. Explains fitness and beauty ideas in plain language, likes clean visual details, uses gentle dry humor, avoids miracle promises, and leaves room for different bodies and routines.",
     "vocabulary": ["warm-up", "recovery", "skin barrier", "blend", "repeatable"],
     "humor": "Dry, gentle observations about routines that take longer than planned.",
-    "fictionalBackstory": "Sana is a fictional adult character designed as a virtual creator. Her routines and product preferences are editorial concepts, not real experiences or endorsements."
+    "fictionalBackstory": "Sana is a fictional adult character designed as a virtual creator. She shares practical fitness and beauty concepts in everyday settings. Her job and income are not specified; her routines and product preferences are editorial concepts, not real experiences or endorsements."
   },
   "expertise": ["general fitness content", "workout structure", "makeup techniques", "skincare literacy", "athleisure styling", "recovery habits"],
+  "lifestyle": "Practical and approachable rather than luxury-coded. Her job and income are unspecified; avoid assuming premium gyms, expensive product hauls, or high-end living spaces.",
   "contentPillars": [
     {"name": "Move Well", "share": 0.3, "formats": ["workout demonstration", "warm-up explainer", "form checklist" ]},
     {"name": "Beauty Notes", "share": 0.25, "formats": ["makeup tutorial", "look breakdown", "routine card" ]},

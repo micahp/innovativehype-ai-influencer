@@ -20,6 +20,7 @@ type Creator = {
   label: string;
   bio: string;
   positioning: string;
+  lifestyle: string;
   personality: string;
   visualIdentity: string;
   image: string;
@@ -35,19 +36,20 @@ const creators: Creator[] = [
     handle: "@mirabyte",
     label: "THE PLUS-SIZE GAMER GIRL",
     bio: "AI virtual creator | Thick, plus-size gamer girl into PC setups, game culture, gamer streetwear and original cosplay. Fictional; AI-generated.",
-    positioning: "A confident, voluptuous BBW gamer girl with a full bust, broad hips, and a prominent rounded butt, known for playful gaming commentary, plus-size gamer fashion, expressive cosplay concepts, and setup ideas.",
+    positioning: "A confident, voluptuous BBW gamer girl with a full bust, broad hips, and a prominent rounded butt, known for playful gaming commentary, plus-size gamer fashion, expressive cosplay concepts, and budget-friendly setup ideas.",
+    lifestyle: "Fictional hourly worker earning about $15–$20/hour. She lives modestly and upgrades her small, secondhand desk setup gradually: one basic monitor, simple keyboard, warm desk lamp, and inexpensive cat-ear headphones.",
     personality: "Witty, confident, lightly flirty, and specific. She talks in gamer metaphors, has opinions about gaming culture, and uses affectionate humor. She never claims real gameplay, purchases, or event attendance.",
-    visualIdentity: "White woman · fair warm skin · heart-shaped face · right-cheek beauty mark · espresso bob with teal underlayer · thick BBW figure with full bust, broad hips, and prominent butt · bare face, no makeup",
-    image: "/characters/mira-byte-candidate-v2.png",
+    visualIdentity: "White woman · fair warm skin · heart-shaped face · right-cheek beauty mark · espresso bob with teal underlayer · thick BBW figure · bare face, no makeup · inexpensive cat-ear headset",
+    image: "/characters/mira-byte-candidate-v3.png",
     pillars: ["Gaming culture", "PC setup concepts", "Plus-size streetwear", "Original cosplay", "Gamer humor"],
     ideas: [
       {
         title: "The setup side quest",
         format: "Instagram carousel · X post",
-        visual: "A teal-violet gaming desk, with Mira in frame and a close-up of the setup details.",
-        image: "/posts/mira-byte-setup-post-v2.png",
-        instagram: "Setup side quest: keep the glow, tame the cable chaos. What gets the next upgrade: lighting, storage, or a snack shelf? 🎮",
-        x: "Setup side quest: cable clutter is the final boss. What should the desk get next: better lighting, more storage, or a snack shelf?",
+        visual: "Mira wearing cat-ear headphones at a compact secondhand desk with one basic monitor, a simple keyboard, and a warm desk lamp.",
+        image: "/characters/mira-byte-candidate-v3.png",
+        instagram: "One monitor, a secondhand desk, and the cat ears are non-negotiable. What’s the next small upgrade: cable clips, a mousepad, or desk storage? 🎮",
+        x: "Not a streamer wall—just a small desk, one screen, and cat-ear headphones. What low-cost upgrade should come next: cable clips, a mousepad, or storage?",
       },
       {
         title: "Gamer streetwear fit check",
@@ -80,6 +82,7 @@ const creators: Creator[] = [
     label: "FITNESS · MAKEUP · BEAUTY",
     bio: "AI virtual creator | Slim-fit fitness and beauty girl sharing workout ideas, gym style, makeup looks and skincare notes. Fictional; AI-generated.",
     positioning: "A slim, fit, athletic beauty-and-workout influencer with an approachable, polished style: practical training concepts, makeup looks, gym fashion and wellness without miracle claims.",
+    lifestyle: "Practical and approachable rather than luxury-coded. Her job and income are unspecified; content avoids assuming premium gyms, expensive product hauls, or high-end living spaces.",
     personality: "Polished, encouraging, and direct, with a little dry humor. She explains fitness and beauty ideas plainly, avoids miracle promises, and makes room for different bodies and routines.",
     visualIdentity: "White woman · fair neutral skin · oval face · hazel-green eyes · small left-cheek dimple · long dark-brown curls in a high puff · slim athletic build",
     image: "/characters/sana-vale-candidate-v2.png",
@@ -153,6 +156,7 @@ export default function DemoPage() {
         <p className={styles.positioning}>{creator.positioning}</p>
         <div className={styles.profileDivider} />
         <div className={styles.detailBlock}><small>VOICE & PERSONALITY</small><p>{creator.personality}</p></div>
+        <div className={styles.detailBlock}><small>EVERYDAY LIFESTYLE</small><p>{creator.lifestyle}</p></div>
         <div className={styles.detailBlock}><small>VISUAL IDENTITY</small><p>{creator.visualIdentity}</p></div>
         <div className={styles.detailBlock}><small>CONTENT PILLARS</small><div className={styles.pillars}>{creator.pillars.map((pillar) => <span key={pillar}>{pillar}</span>)}</div></div>
         <div className={styles.disclosure}>ⓘ Fictional AI-generated virtual creator. No real person is depicted.</div>
