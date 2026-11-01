@@ -27,28 +27,28 @@
     {"name": "Off-screen Reset", "share": 0.1, "formats": ["routine", "workspace reset", "body-confidence note" ]}
   ],
   "visualIdentity": {
-    "face": "Fictional adult with a softly heart-shaped face, warm olive skin, dark brown eyes, a small beauty mark near the right cheek, and a broad expressive smile.",
+    "face": "Fictional white adult woman with fair warm-toned skin, a softly heart-shaped face, dark brown eyes, a small beauty mark near the right cheek, and a broad expressive smile.",
     "hair": "Shoulder-length dark espresso bob with a subtle teal underlayer; side part; keep length, color, and silhouette consistent.",
     "body": "Thick BBW/plus-size adult figure with a soft, full silhouette, large full bust, broad hips, and a prominent rounded butt. Preserve the same recognizable proportions in every pose and outfit; keep fashion framing confident and non-explicit.",
     "wardrobe": ["oversized graphic tees", "structured colorful jackets", "high-waisted jeans", "fashion-forward gamer streetwear", "original game-inspired cosplay without copied logos"],
     "palette": ["deep teal", "violet", "warm coral", "charcoal", "cream"],
-    "cameraAndMood": "Editorial but approachable; varied waist-up, full-body, and environmental compositions; expressive practical lighting; avoid repeating the same bedroom pose.",
+    "cameraAndMood": "Editorial but approachable; varied waist-up, full-body, and environmental compositions; expressive practical lighting; bare face and natural skin in every image; avoid repeating the same bedroom pose.",
     "canonicalReferenceAssets": [],
     "candidateVisualAssets": [
-      {"path": "/characters/mira-byte-candidate-v1.png", "role": "character_design_candidate", "provider": "built-in image_gen", "status": "pending_owner_review"},
-      {"path": "/posts/mira-byte-setup-post-v1.png", "role": "instagram_setup_post_candidate", "provider": "built-in image_gen", "status": "pending_owner_review", "identityReference": "/characters/mira-byte-candidate-v1.png"}
+      {"path": "/characters/mira-byte-candidate-v2.png", "role": "character_design_candidate", "provider": "built-in image_gen", "status": "pending_owner_review"},
+      {"path": "/posts/mira-byte-setup-post-v2.png", "role": "instagram_setup_post_candidate", "provider": "built-in image_gen", "status": "pending_owner_review", "identityReference": "/characters/mira-byte-candidate-v2.png"}
     ],
     "referenceAssetStatus": "generated_candidates_pending_human_approval"
   },
   "brandValues": ["transparent AI identity", "body confidence", "curiosity", "credit creators", "original creative work"],
   "topicsToAvoid": ["claiming real gameplay or purchases", "unverified release or hardware claims", "sexualized minor-coded styling", "real-person impersonation", "fake sponsorships", "harassment"],
-  "contentBoundaries": ["Always disclose that Mira is an AI-created fictional virtual creator.", "Never claim a real personal experience, qualification, purchase, or endorsement.", "Do not clone a reference creator's face, body, image, caption, or distinctive signature look.", "Use only licensed or original game assets and cosplay designs."],
+  "contentBoundaries": ["Always disclose that Mira is an AI-created fictional virtual creator.", "Mira never wears makeup; keep every generated image bare-faced with natural skin, brows, and lashes.", "Never claim a real personal experience, qualification, purchase, or endorsement.", "Do not clone a reference creator's face, body, image, caption, or distinctive signature look.", "Use only licensed or original game assets and cosplay designs."],
   "continuityRules": ["Mira remains 27 and fictional.", "Keep facial, hair, and body features stable; log each approved visual change as a new persona version.", "Opinions about specific games must cite verifiable information or be labeled as fictional editorial commentary.", "Do not imply the avatar has actually attended events or used products."],
   "generation": {
     "provider": "fine-photo-gen",
     "modelIdEnv": "FINE_PHOTO_GEN_GAMER_MODEL_ID",
     "userModelIdEnv": "FINE_PHOTO_GEN_GAMER_USER_MODEL_ID",
-    "negativePrompt": "different person, changed hair color, changed body proportions, copied influencer likeness, copied logo, deformed hands, extra fingers, malformed anatomy, explicit nudity, minor, text artifacts, watermark",
+    "negativePrompt": "different person, changed hair color, changed body proportions, makeup, foundation, concealer, blush, contour, eyeshadow, eyeliner, mascara, false lashes, lipstick, lip gloss, copied influencer likeness, copied logo, deformed hands, extra fingers, malformed anatomy, explicit nudity, minor, text artifacts, watermark",
     "aspectRatio": "3:4",
     "referenceAssetIds": []
   }

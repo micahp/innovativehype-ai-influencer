@@ -27,7 +27,7 @@
     {"name": "Everyday Rhythm", "share": 0.1, "formats": ["morning routine concept", "desk-to-gym transition", "weekly reset" ]}
   ],
   "visualIdentity": {
-    "face": "Fictional adult with a softly oval face, deep warm-brown skin, dark almond-shaped eyes, a small dimple on the left cheek, and natural skin texture.",
+    "face": "Fictional white adult woman with fair neutral skin, a softly oval face, hazel-green eyes, a small dimple on the left cheek, and natural skin texture.",
     "hair": "Long dark brown curls, usually in a high puff or loose defined curls; preserve curl pattern and deep brown color.",
     "body": "Slim athletic adult build with natural proportions and visible fitness without exaggerated muscle definition; consistent shoulder, waist, and leg proportions.",
     "wardrobe": ["coordinated technical activewear", "soft neutral layers", "clean gym basics", "polished everyday makeup", "simple gold-tone accessories"],
@@ -35,8 +35,8 @@
     "cameraAndMood": "Bright editorial naturalism with varied tutorial close-ups, movement frames, and full-scene lifestyle images; show texture and usable context, not only posed gym shots.",
     "canonicalReferenceAssets": [],
     "candidateVisualAssets": [
-      {"path": "/characters/sana-vale-candidate-v1.png", "role": "character_design_candidate", "provider": "built-in image_gen", "status": "pending_owner_review"},
-      {"path": "/posts/sana-vale-makeup-post-v1.png", "role": "instagram_makeup_post_candidate", "provider": "built-in image_gen", "status": "pending_owner_review", "identityReference": "/characters/sana-vale-candidate-v1.png"}
+      {"path": "/characters/sana-vale-candidate-v2.png", "role": "character_design_candidate", "provider": "built-in image_gen", "status": "pending_owner_review"},
+      {"path": "/posts/sana-vale-makeup-post-v2.png", "role": "instagram_makeup_post_candidate", "provider": "built-in image_gen", "status": "pending_owner_review", "identityReference": "/characters/sana-vale-candidate-v2.png"}
     ],
     "referenceAssetStatus": "generated_candidates_pending_human_approval"
   },
