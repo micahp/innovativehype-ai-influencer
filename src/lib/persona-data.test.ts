@@ -24,7 +24,7 @@ describe("initial fictional personas", () => {
   it("does not claim canonical images exist before they are generated and reviewed", async () => {
     for (const file of ["mira-byte.v1.json", "sana-vale.v1.json"]) {
       const persona = await readPersona(file);
-      expect(persona.visualIdentity.referenceAssetStatus).toBe("pending_generation_and_human_approval");
+      expect(persona.visualIdentity.referenceAssetStatus).toBe("generated_candidates_pending_human_approval");
     }
   });
 });

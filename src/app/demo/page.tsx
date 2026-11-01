@@ -1,74 +1,177 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import styles from "./demo.module.css";
 
-type Section = "Overview" | "Creators" | "Research" | "Calendar" | "Content studio" | "Analytics";
+type PostIdea = {
+  title: string;
+  format: string;
+  visual: string;
+  instagram: string;
+  x: string;
+  image?: string;
+};
 
-const navigation: { label: Section; icon: string }[] = [
-  { label: "Overview", icon: "◫" },
-  { label: "Creators", icon: "◉" },
-  { label: "Research", icon: "⌕" },
-  { label: "Calendar", icon: "▦" },
-  { label: "Content studio", icon: "✳" },
-  { label: "Analytics", icon: "⌁" },
-];
+type Creator = {
+  slug: string;
+  name: string;
+  age: number;
+  handle: string;
+  label: string;
+  bio: string;
+  positioning: string;
+  personality: string;
+  visualIdentity: string;
+  image: string;
+  pillars: string[];
+  ideas: PostIdea[];
+};
 
-const creators = [
-  { initials: "GG", name: "Mika Byte", handle: "@mikabyte.ai", niche: "Gaming · Style · Body confidence", className: "gamer", tone: "Creator 01" },
-  { initials: "FL", name: "Nina Vale", handle: "@ninavale.ai", niche: "Fitness · Beauty · Wellness", className: "fitness", tone: "Creator 02" },
-];
-
-const calendar = [
-  { day: "MON · 03", creator: "Mika Byte", title: "The cozy corner upgrade", type: "Gaming setup", color: "mint" },
-  { day: "TUE · 04", creator: "Nina Vale", title: "A realistic 20-minute reset", type: "Fitness routine", color: "rose" },
-  { day: "WED · 05", creator: "Mika Byte", title: "Patch notes, but make it personal", type: "Game commentary", color: "mint" },
-  { day: "THU · 06", creator: "Nina Vale", title: "Five-minute warm glow", type: "Beauty tutorial", color: "rose" },
+const creators: Creator[] = [
+  {
+    slug: "mira-byte",
+    name: "Mira Byte",
+    age: 27,
+    handle: "@mirabyte",
+    label: "THE PLUS-SIZE GAMER GIRL",
+    bio: "AI virtual creator | Thick, plus-size gamer girl into PC setups, game culture, gamer streetwear and original cosplay. Fictional; AI-generated.",
+    positioning: "A confident, voluptuous BBW gamer girl with a full bust and prominent hips, known for playful gaming commentary, plus-size gamer fashion, expressive cosplay concepts, and setup ideas.",
+    personality: "Witty, confident, lightly flirty, and specific. She talks in gamer metaphors, has opinions about gaming culture, and uses affectionate humor. She never claims real gameplay, purchases, or event attendance.",
+    visualIdentity: "Warm olive skin · heart-shaped face · small beauty mark on right cheek · espresso bob with teal underlayer · thick BBW silhouette with full bust and broad hips",
+    image: "/characters/mira-byte-candidate-v1.png",
+    pillars: ["Gaming culture", "PC setup concepts", "Plus-size streetwear", "Original cosplay", "Gamer humor"],
+    ideas: [
+      {
+        title: "The setup side quest",
+        format: "Instagram carousel · X post",
+        visual: "A teal-violet gaming desk, with Mira in frame and a close-up of the setup details.",
+        image: "/posts/mira-byte-setup-post-v1.png",
+        instagram: "Setup side quest: keep the glow, tame the cable chaos. What gets the next upgrade: lighting, storage, or a snack shelf? 🎮",
+        x: "Setup side quest: cable clutter is the final boss. What should the desk get next: better lighting, more storage, or a snack shelf?",
+      },
+      {
+        title: "Gamer streetwear fit check",
+        format: "Instagram photo set · X poll",
+        visual: "Full-body outfit photo, then detail crops of the jacket, color blocking, and fit.",
+        instagram: "Gamer streetwear, built around the silhouette first and the color palette second. Team teal jacket or violet layer?",
+        x: "Choose the next fit color: teal, violet, or coral?",
+      },
+      {
+        title: "Original fantasy loadout",
+        format: "Instagram Reel · X poll",
+        visual: "An original teal-violet-coral fantasy outfit, shown from fabric details to the finished look. No game or franchise costume.",
+        instagram: "A fantasy loadout with no franchise attached. Which detail should lead the next design: the cape, the armor panels, or the color?",
+        x: "Design poll: teal armor, violet cape, coral accents. Keep all three or drop one?",
+      },
+      {
+        title: "The settings-menu final boss",
+        format: "Instagram meme carousel · X post",
+        visual: "A three-panel gamer joke: launch screen, settings menu, and an over-customized character creator.",
+        instagram: "The game is ready. The settings menu has requested one more side quest. What’s your most familiar pre-game detour?",
+        x: "You opened the game. Forty minutes later: settings, keybinds, character creator. What’s your pre-game side quest?",
+      },
+    ],
+  },
+  {
+    slug: "sana-vale",
+    name: "Sana Vale",
+    age: 26,
+    handle: "@sanavale.fit",
+    label: "FITNESS · MAKEUP · BEAUTY",
+    bio: "AI virtual creator | Slim-fit fitness and beauty girl sharing workout ideas, gym style, makeup looks and skincare notes. Fictional; AI-generated.",
+    positioning: "A slim, fit, athletic beauty-and-workout influencer with an approachable, polished style: practical training concepts, makeup looks, gym fashion and wellness without miracle claims.",
+    personality: "Polished, encouraging, and direct, with a little dry humor. She explains fitness and beauty ideas plainly, avoids miracle promises, and makes room for different bodies and routines.",
+    visualIdentity: "Deep warm-brown skin · oval face · small left-cheek dimple · long dark-brown curls in a high puff · slim athletic build with natural proportions",
+    image: "/characters/sana-vale-candidate-v1.png",
+    pillars: ["Workout ideas", "Gym fashion", "Makeup looks", "Skincare notes", "Recovery & wellness"],
+    ideas: [
+      {
+        title: "Lilac meets copper",
+        format: "Instagram makeup carousel · X post",
+        visual: "Close-up color study: lilac on the lid, copper accent, then a finished look in soft daylight.",
+        image: "/posts/sana-vale-makeup-post-v1.png",
+        instagram: "Lilac on the lid, a little copper at the edge, and soft daylight doing its part. Which shade would you make the focus?",
+        x: "Lilac + copper: keep the look soft or push the contrast? Taking votes for the next color study.",
+      },
+      {
+        title: "A no-hype training outline",
+        format: "Instagram carousel · X question",
+        visual: "A warm-up, a few general movement patterns, and a calm finish. Exercise details get reviewed before publication.",
+        instagram: "A simple session outline: warm up, choose a push, a pull, and a lower-body movement that fits your level, then leave room for a cool-down. Save the structure; adjust the details to your needs.",
+        x: "A useful workout plan starts with a warm-up and movements that suit your level. What would help more next: a form checklist or a beginner-friendly session outline?",
+      },
+      {
+        title: "Gym-bag edit",
+        format: "Instagram flatlay · X question",
+        visual: "A neat, unbranded bag layout with basic training items and a short packing checklist.",
+        instagram: "The gym-bag edit: useful basics, a spare hair tie, and enough room for the thing you always forget. What belongs on your must-pack list?",
+        x: "Gym-bag check: what’s the one small thing you’re happiest to have remembered?",
+      },
+      {
+        title: "Recovery corner",
+        format: "Instagram lifestyle photo · X post",
+        visual: "Warm daylight on a mat, water glass, and neutral beauty items. No products are named or endorsed.",
+        instagram: "A quieter corner for the in-between days. Keep the reset simple: a little space, a little breathing room, and no pressure to turn rest into another task.",
+        x: "Rest-day reminder: recovery doesn’t need an elaborate routine. What helps you make a little room to reset?",
+      },
+    ],
+  },
 ];
 
 export default function DemoPage() {
-  const [active, setActive] = useState<Section>("Overview");
-  const [month, setMonth] = useState("November 2026");
-  const [selected, setSelected] = useState("All creators");
+  const [selectedSlug, setSelectedSlug] = useState(creators[0].slug);
+  const creator = creators.find((entry) => entry.slug === selectedSlug) ?? creators[0];
 
   return <main className={styles.shell}>
-    <aside className={styles.sidebar}>
-      <div className={styles.brand}><div className={styles.brandMark}>AI<span>·</span>IS</div><div><b>INFLUENCER</b><small>STUDIO</small></div></div>
-      <div className={styles.demoBadge}><i /> INTERACTIVE DEMO <span>SAMPLE DATA</span></div>
-      <div className={styles.navLabel}>WORKSPACE</div>
-      <nav className={styles.nav}>{navigation.map((item) => <button key={item.label} onClick={() => setActive(item.label)} className={active === item.label ? styles.navActive : ""}><span>{item.icon}</span>{item.label}{item.label === "Calendar" && <small>14</small>}</button>)}</nav>
-      <div className={styles.navLabel + " " + styles.creatorLabel}>VIRTUAL CREATORS <span>02</span></div>
-      <div className={styles.creatorList}>{creators.map((creator) => <button key={creator.name} onClick={() => { setSelected(creator.name); setActive("Creators"); }}><i className={creator.className}>{creator.initials}</i><span><b>{creator.name}</b><small>{creator.handle}</small></span><em /></button>)}</div>
-      <div className={styles.sidebarBottom}><div className={styles.connection}><i /> Sandbox environment <small>NO LIVE ACCOUNTS</small></div><Link className={styles.signin} href="/login">Admin sign in <span>↗</span></Link></div>
-    </aside>
+    <header className={styles.header}>
+      <a className={styles.brand} href="/demo"><span className={styles.brandMark}>AI<span>·</span>IS</span><span><b>INFLUENCER</b><small>STUDIO</small></span></a>
+      <div className={styles.headerLabel}>CHARACTER DESIGN <i /> CONTENT IDEAS</div>
+      <span className={styles.previewTag}><i /> PREVIEW · NO LIVE POSTS</span>
+    </header>
 
-    <section className={styles.main}>
-      <header className={styles.topbar}><div className={styles.crumb}>STUDIO <span>/</span> {active.toUpperCase()}</div><div className={styles.topActions}><span className={styles.mode}><i /> DEMO MODE</span><button aria-label="Notifications">♧<i /></button><div className={styles.admin}>DEMO</div></div></header>
-      <div className={styles.content}>
-        <div className={styles.demoNotice}><span>ⓘ</span><div><b>Preview workspace</b><small>Everything here is illustrative sample data. No accounts are connected and no posts will be published.</small></div><button onClick={() => setActive("Content studio")}>Explore a workflow <span>→</span></button></div>
-
-        {active === "Overview" && <>
-          <div className={styles.heading}><div><div className={styles.eyebrow}>MONDAY, NOVEMBER 2, 2026 <span>·</span> WEEK 45</div><h1>Your studio, at a glance.</h1><p>Two distinct virtual creators. One research-led content operation.</p></div><button className={styles.darkButton} onClick={() => setActive("Calendar")}>Open content calendar <span>↗</span></button></div>
-          <div className={styles.metrics}>{[["Planned this month", "24", "Across both creators", "▦"], ["Awaiting review", "06", "Human approval required", "◷"], ["Research signals", "18", "Sources recorded this week", "⌕"], ["Live publishing", "Paused", "Sandbox · no accounts linked", "Ⅱ"]].map(([label, value, detail, icon]) => <article key={label}><div>{label}<span>{icon}</span></div><strong className={value === "Paused" ? styles.paused : ""}>{value}</strong><small>{detail}</small></article>)}</div>
-          <div className={styles.overviewGrid}>
-            <section className={styles.panel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>CREATOR ROSTER</div><h2>Two voices. Two clear points of view.</h2></div><button className={styles.textButton} onClick={() => setActive("Creators")}>VIEW PROFILES ↗</button></div><div className={styles.profileGrid}>{creators.map((creator) => <button className={styles.profile} key={creator.name} onClick={() => { setSelected(creator.name); setActive("Creators"); }}><div className={`${styles.portrait} ${styles[creator.className]}`}><span>{creator.tone}</span><b>{creator.initials}</b><small>FICTIONAL AI CREATOR</small></div><div className={styles.profileBody}><div><div><h3>{creator.name}</h3><small>{creator.handle}</small></div><span className={styles.version}>V 1.0</span></div><p>{creator.niche}</p><div className={styles.tags}>{(creator.className === "gamer" ? ["Gaming culture", "Fashion", "Humor"] : ["Training", "Beauty", "Wellness"]).map((tag) => <span key={tag}>{tag}</span>)}</div></div></button>)}</div></section>
-            <section className={styles.panel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>THIS WEEK</div><h2>Coming up next</h2></div><button className={styles.textButton} onClick={() => setActive("Calendar")}>FULL CALENDAR ↗</button></div><div className={styles.upcoming}>{calendar.slice(0, 3).map((item) => <div className={styles.upcomingItem} key={item.title}><div className={`${styles.dateBlock} ${styles[item.color]}`}><b>{item.day.split(" · ")[1]}</b><small>{item.day.split(" · ")[0]}</small></div><div><strong>{item.title}</strong><small>{item.creator} <span>·</span> {item.type}</small></div><span className={styles.draft}>DRAFT</span></div>)}</div><div className={styles.approvalHint}><span>◷</span><div><b>Approval-first by default</b><small>Nothing publishes without an explicit review.</small></div></div></section>
-          </div>
-          <div className={styles.bottomGrid}><section className={styles.panel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>RESEARCH → CREATIVE</div><h2>A signal becomes an original idea</h2></div><span className={styles.sampleTag}>EXAMPLE FLOW</span></div><div className={styles.flow}><div><small>OBSERVED SIGNAL</small><b>Cozy gaming spaces</b><span>Recurring setup tours in gaming feeds</span></div><i>→</i><div><small>CREATIVE ANGLE</small><b>“My 2 a.m. comfort setup”</b><span>Personal story, Mika’s own visual direction</span></div><i>→</i><div><small>NEXT STEP</small><b>Review the brief</b><span>Original concept; no reference assets reused</span></div></div></section><section className={styles.panel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>SYSTEM STATUS</div><h2>Sandbox connections</h2></div></div><div className={styles.statusRows}>{[["Research library", "Sample records", "amber"], ["Fine Photo Gen", "Not connected", "muted"], ["Instagram + X", "Not connected", "muted"], ["Publishing", "Paused", "green"]].map(([label, status, tone]) => <div key={label}><span>{label}</span><b className={styles[tone]}><i />{status}</b></div>)}</div></section></div>
-          <footer className={styles.footer}>Demo content is fictional and illustrative. Performance metrics are not real. <span>AI Influencer Studio · Prototype</span></footer>
-        </>}
-
-        {active === "Creators" && <><div className={styles.heading}><div><div className={styles.eyebrow}>PERSONA WORKSPACE</div><h1>Meet the creators.</h1><p>Distinct fictional identities, each with their own voice, visual direction, and content pillars.</p></div></div><div className={styles.creatorDetailGrid}>{creators.filter(c => selected === "All creators" || c.name === selected).map((creator) => <section className={styles.panel} key={creator.name}><div className={`${styles.detailHero} ${styles[creator.className]}`}><span>FICTIONAL AI CREATOR · ADULT</span><b>{creator.initials}</b></div><div className={styles.detailBody}><div className={styles.eyebrow}>{creator.tone.toUpperCase()} · PERSONA V1.0</div><h2>{creator.name}</h2><p>{creator.className === "gamer" ? "Playful, confident, and genuinely into games. Mika brings gamer culture, personal style, and body confidence together in a warm, witty voice." : "Approachable and quietly ambitious. Nina shares realistic movement, beauty rituals, and recovery without pretending wellness is one-size-fits-all."}</p><h3>Content pillars</h3><div className={styles.tags}>{(creator.className === "gamer" ? ["Gaming & releases", "Setup & hardware", "Cosplay concepts", "Fashion & confidence", "Community humor"] : ["Strength & mobility", "Gym style", "Makeup & skincare", "Recovery & wellness", "Daily routines"]).map(t => <span key={t}>{t}</span>)}</div><div className={styles.aiDisclosure}>ⓘ Transparently presented as a fictional AI-generated virtual creator.</div></div></section>)}</div></>}
-
-        {active === "Research" && <><div className={styles.heading}><div><div className={styles.eyebrow}>SOURCE-LINKED INTELLIGENCE</div><h1>Research with receipts.</h1><p>Reference patterns and trend concepts are kept separate from observed performance.</p></div><span className={styles.sampleTag}>SAMPLE RECORDS</span></div><div className={styles.metrics}>{[["Reference concepts", "32", "Illustrative examples", "⌕"], ["Verified metrics", "0", "No live data imported", "◇"], ["Trend signals", "18", "Sample, not current trends", "↗"], ["Sources", "12", "Example source records", "↗"]].map(([a,b,c,d]) => <article key={a}><div>{a}<span>{d}</span></div><strong>{b}</strong><small>{c}</small></article>)}</div><section className={styles.panel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>INSPIRATION LIBRARY</div><h2>Example creative patterns</h2></div><span className={styles.sampleTag}>ILLUSTRATIVE ONLY</span></div>{[["Gaming", "Cozy setup tour", "Personal walkthrough · warm practical lighting · lived-in details", "Composition · Storytelling"], ["Beauty", "Get-ready-with-me sequence", "Process-led tutorial · close framing · clear step-by-step hook", "Tutorial · Close-up"], ["Fitness", "A realistic training day", "Short routine · approachable pacing · useful modification", "Routine · Education"], ["Fashion", "One outfit, three ways", "Repeat-wear styling · consistent background · quick transitions", "Styling · Series"]].map((row,i) => <div className={styles.researchRow} key={row[1]}><div className={`${styles.patternArt} ${styles[`art${i}`]}`}><span>{row[0].toUpperCase()}</span></div><div><small>{row[0]} · CONCEPT PATTERN</small><b>{row[1]}</b><p>{row[2]}</p><span className={styles.tagsInline}>{row[3]}</span></div><span className={styles.uncertain}>No performance metrics</span></div>)}</section></>}
-
-        {active === "Calendar" && <><div className={styles.heading}><div><div className={styles.eyebrow}>EDITORIAL PLANNING</div><h1>Your content calendar.</h1><p>Concepts are drafts until a human reviews and approves them.</p></div><div className={styles.monthControl}><button onClick={() => setMonth(month === "November 2026" ? "October 2026" : "November 2026")}>←</button><b>{month}</b><button onClick={() => setMonth(month === "November 2026" ? "December 2026" : "November 2026")}>→</button></div></div><div className={styles.calendarLegend}><span><i className={styles.legendMint} />Mika Byte · Gaming & style</span><span><i className={styles.legendRose} />Nina Vale · Fitness & beauty</span><span>All times shown in workspace timezone</span></div><div className={styles.weekGrid}>{["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d,i) => <div className={styles.weekDay} key={d}><span>{d}</span><b>{String(i+2).padStart(2,"0")}</b></div>)}</div><div className={styles.calendarList}>{calendar.map((item) => <div className={styles.calendarEntry} key={item.title}><div className={`${styles.dateBlock} ${styles[item.color]}`}><b>{item.day.split(" · ")[1]}</b><small>{item.day.split(" · ")[0]}</small></div><div><small>{item.creator} · {item.type}</small><b>{item.title}</b><span>Creative brief ready · Awaiting review</span></div><span className={styles.draft}>DRAFT</span><button aria-label="View concept" onClick={() => setActive("Content studio")}>→</button></div>)}</div><div className={styles.calendarFoot}>Sample schedule · No posts are connected or queued for publication.</div></>}
-
-        {active === "Content studio" && <><div className={styles.heading}><div><div className={styles.eyebrow}>BRIEF → GENERATION → REVIEW</div><h1>Make something worth sharing.</h1><p>A sample creative brief, showing how research turns into an original post concept.</p></div><span className={styles.sampleTag}>NO IMAGE GENERATED</span></div><div className={styles.studioGrid}><section className={styles.panel + " " + styles.briefPanel}><div className={styles.eyebrow}>CREATIVE BRIEF · EXAMPLE 014</div><div className={styles.briefTitle}><span className={styles.avatarSmall}>GG</span><div><h2>The comfort-game check-in</h2><small>Mika Byte · Instagram carousel concept</small></div></div><div className={styles.briefSection}><small>THE ORIGINAL ANGLE</small><p>Invite people to share the game they return to when they want a familiar, low-pressure evening. Mika adds a personal favorite and asks the community what theirs is.</p></div><div className={styles.briefSection}><small>VISUAL DIRECTION</small><p>Warm evening desk scene; medium-wide composition with controller and screen glow as context. Casual gamer outfit, relaxed expression, tactile details. Create a new scene; do not recreate a source post.</p></div><div className={styles.briefSection}><small>CAPTION DRAFT</small><blockquote>Some games feel like putting on your favorite hoodie. Mine is the one I can wander around in for 20 minutes and forget what the quest was. What's your comfort game?</blockquote></div><div className={styles.briefMeta}><span>Source: sample inspiration pattern</span><span>AI disclosure included</span><span>Approval required</span></div></section><section className={styles.panel + " " + styles.assetPanel}><div className={styles.eyebrow}>MEDIA CANDIDATE</div><div className={styles.emptyAsset}><span>✳</span><b>Generation is turned off in this demo</b><small>Connect Fine Photo Gen and approved character references in the full workspace to create image candidates.</small></div><button className={styles.outlineButton} onClick={() => setActive("Creators")}>View character profiles ↗</button></section></div></>}
-
-        {active === "Analytics" && <><div className={styles.heading}><div><div className={styles.eyebrow}>MEASURE · LEARN · ADJUST</div><h1>Evidence over guesswork.</h1><p>This demo has no live account or performance data. Here’s the reporting view the product is designed around.</p></div><span className={styles.sampleTag}>NO REAL METRICS</span></div><div className={styles.metrics}>{[["Published posts", "—", "No accounts connected", "▣"], ["Reach / impressions", "—", "Unavailable in demo", "◉"], ["Follower growth", "—", "Unavailable in demo", "↗"], ["Observed spend", "$0.00", "No generation requests made", "$" ]].map(([a,b,c,d]) => <article key={a}><div>{a}<span>{d}</span></div><strong>{b}</strong><small>{c}</small></article>)}</div><div className={styles.overviewGrid}><section className={styles.panel + " " + styles.chartPanel}><div className={styles.panelHead}><div><div className={styles.eyebrow}>WEEKLY REVIEW</div><h2>Performance by content pillar</h2></div><span className={styles.sampleTag}>EMPTY STATE</span></div><div className={styles.emptyChart}><div className={styles.chartGrid}><i/><i/><i/><i/></div><span>Connect an account and collect post insights to see results here.</span></div><div className={styles.chartLegend}><span><i className={styles.legendMint}/>Gaming & style</span><span><i className={styles.legendRose}/>Fitness & beauty</span></div></section><section className={styles.panel}><div className={styles.eyebrow}>DECISION RULE</div><h2 className={styles.ruleTitle}>No evidence, no performance claims.</h2><p className={styles.ruleCopy}>Recommendations will show the observations behind them, what is still unknown, and how confident the system is.</p><div className={styles.approvalHint}><span>◇</span><div><b>Experiments keep their history</b><small>Hypotheses and outcomes remain auditable.</small></div></div></section></div></>}
-      </div>
+    <section className={styles.intro}>
+      <div className={styles.eyebrow}>TWO FICTIONAL ADULT CREATORS · VISUAL CANDIDATES + FIRST POSTS</div>
+      <h1>Meet the characters.<br /><em>Then give them something to say.</em></h1>
+      <p>Distinct virtual personalities, original images, and platform-specific draft posts. The imagery is AI-generated; these concepts have not been published.</p>
     </section>
+
+    <nav className={styles.creatorTabs} aria-label="Choose a creator">
+      {creators.map((entry) => <button key={entry.slug} onClick={() => setSelectedSlug(entry.slug)} className={creator.slug === entry.slug ? styles.activeTab : ""}>
+        <img src={entry.image} alt="" /><span><b>{entry.name}</b><small>{entry.label}</small></span><i>{creator.slug === entry.slug ? "●" : "○"}</i>
+      </button>)}
+    </nav>
+
+    <section className={styles.profileGrid}>
+      <figure className={styles.heroImage}>
+        <img src={creator.image} alt={`AI-generated visual candidate for ${creator.name}`} />
+        <figcaption><span>ORIGINAL AI IMAGE</span><span>CHARACTER CANDIDATE · REVIEW PENDING</span></figcaption>
+      </figure>
+      <article className={styles.profile}>
+        <div className={styles.eyebrow}>{creator.label} <span>·</span> AGE {creator.age}</div>
+        <div className={styles.titleRow}><h2>{creator.name}</h2><span className={styles.handle}>{creator.handle} · suggestion</span></div>
+        <p className={styles.bio}>{creator.bio}</p>
+        <p className={styles.positioning}>{creator.positioning}</p>
+        <div className={styles.profileDivider} />
+        <div className={styles.detailBlock}><small>VOICE & PERSONALITY</small><p>{creator.personality}</p></div>
+        <div className={styles.detailBlock}><small>VISUAL IDENTITY</small><p>{creator.visualIdentity}</p></div>
+        <div className={styles.detailBlock}><small>CONTENT PILLARS</small><div className={styles.pillars}>{creator.pillars.map((pillar) => <span key={pillar}>{pillar}</span>)}</div></div>
+        <div className={styles.disclosure}>ⓘ Fictional AI-generated virtual creator. No real person is depicted.</div>
+      </article>
+    </section>
+
+    <section className={styles.ideasSection}>
+      <div className={styles.sectionHeading}><div><div className={styles.eyebrow}>FIRST CONTENT SET · 4 ORIGINAL CONCEPTS</div><h2>Post ideas for Instagram and X.</h2></div><span className={styles.draftLabel}>DRAFTS · NOT SCHEDULED</span></div>
+      <div className={styles.ideaGrid}>{creator.ideas.map((idea, index) => <article className={styles.ideaCard} key={idea.title}>
+        {idea.image ? <div className={styles.ideaImage}><img src={idea.image} alt={`AI-generated post image candidate for ${idea.title}`} /><span>POST IMAGE CANDIDATE</span></div> : <div className={`${styles.ideaVisual} ${creator.slug === "mira-byte" ? styles.gamerVisual : styles.fitnessVisual}`}><span>VISUAL BRIEF · {String(index + 1).padStart(2, "0")}</span><b>{idea.visual}</b></div>}
+        <div className={styles.ideaBody}>
+          <div className={styles.ideaMeta}><span>IDEA {String(index + 1).padStart(2, "0")}</span><small>{idea.format}</small></div>
+          <h3>{idea.title}</h3>
+          <div className={styles.caption}><small>INSTAGRAM DRAFT</small><p>{idea.instagram}</p></div>
+          <div className={styles.caption + " " + styles.xCaption}><small>X DRAFT</small><p>{idea.x}</p></div>
+        </div>
+      </article>)}</div>
+    </section>
+
+    <footer className={styles.footer}><p>Image source: built-in image generation for this prototype, not Fine Photo Gen. Fine Photo Gen, Instagram, and X are not connected here.</p><p>Visuals and post copy are original candidates for review. No real performance data, endorsements, or publishing activity.</p></footer>
   </main>;
 }

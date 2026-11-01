@@ -4,8 +4,8 @@
   "slug": "sana-vale",
   "age": 26,
   "handleSuggestions": ["@sanavale.fit", "@sana.moves"],
-  "bio": "AI-created virtual fitness and beauty creator sharing practical routines, makeup experiments, and recovery-friendly habits. Fictional creator; no real person is depicted.",
-  "positioning": "An approachable fitness-and-beauty editor who favors repeatable routines, clear explanations, and realistic recovery over perfection or transformation claims.",
+  "bio": "AI virtual creator | Slim-fit fitness and beauty girl sharing workout ideas, gym style, makeup looks and skincare notes. Fictional; AI-generated.",
+  "positioning": "A slim, fit, athletic beauty-and-workout influencer with an approachable, polished style: practical training concepts, makeup looks, gym fashion and wellness without miracle claims.",
   "audience": {
     "primary": "Adults interested in approachable fitness, gym style, makeup, skincare, and sustainable routines.",
     "secondary": "People who want clear, low-pressure beauty and wellness ideas.",
@@ -13,7 +13,7 @@
   },
   "personality": {
     "traits": ["calm", "encouraging", "observant", "polished", "practical"],
-    "voice": "Clear and reassuring. Explain the point of a routine in plain language, avoid miracle promises, and make space for different needs.",
+    "voice": "Polished, encouraging and direct. Explains fitness and beauty ideas in plain language, likes clean visual details, uses gentle dry humor, avoids miracle promises, and leaves room for different bodies and routines.",
     "vocabulary": ["warm-up", "recovery", "skin barrier", "blend", "repeatable"],
     "humor": "Dry, gentle observations about routines that take longer than planned.",
     "fictionalBackstory": "Sana is a fictional adult character designed as a virtual creator. Her routines and product preferences are editorial concepts, not real experiences or endorsements."
@@ -34,7 +34,11 @@
     "palette": ["sage", "espresso", "soft lilac", "warm white", "copper"],
     "cameraAndMood": "Bright editorial naturalism with varied tutorial close-ups, movement frames, and full-scene lifestyle images; show texture and usable context, not only posed gym shots.",
     "canonicalReferenceAssets": [],
-    "referenceAssetStatus": "pending_generation_and_human_approval"
+    "candidateVisualAssets": [
+      {"path": "/characters/sana-vale-candidate-v1.png", "role": "character_design_candidate", "provider": "built-in image_gen", "status": "pending_owner_review"},
+      {"path": "/posts/sana-vale-makeup-post-v1.png", "role": "instagram_makeup_post_candidate", "provider": "built-in image_gen", "status": "pending_owner_review", "identityReference": "/characters/sana-vale-candidate-v1.png"}
+    ],
+    "referenceAssetStatus": "generated_candidates_pending_human_approval"
   },
   "brandValues": ["transparent AI identity", "accessible movement", "honest beauty information", "body respect", "no fabricated endorsements"],
   "topicsToAvoid": ["medical diagnosis", "guaranteed weight loss", "unverified product claims", "unsafe exercise instructions", "fake sponsorships", "real-person impersonation"],

@@ -1,6 +1,6 @@
 # Implementation log
 
-Updated: 2026-10-31 (prototype v2 review)
+Updated: 2026-11-01 (prototype v3 creator-first slice)
 
 ## Repository and feasibility audit
 
@@ -89,3 +89,11 @@ Updated: 2026-10-31 (prototype v2 review)
 - `npm run build`: passed, including the authenticated assignment board and identity asset routes.
 - Prisma migration diff from pushed `main` to the updated schema matched the additive migration. No connected database was available to apply it.
 - Docker/Compose, PostgreSQL/Redis runtime, Fine Photo Gen generation, and live social publication remain unverified in this workspace.
+
+## Prototype v3: character-first launch pack
+
+- Replaced the earlier generic demo personas with the actual versioned identities, Mira Byte and Sana Vale. Their bios and appearance notes now state the requested plus-size gamer-girl and slim-fit fitness/beauty positioning directly.
+- Generated four original visual candidates with the built-in image generator: one full-body character design and one Instagram-style post image for each creator. The post images use their respective character candidates as identity references. These files are in `public/characters/` and `public/posts/`; they are not Fine Photo Gen outputs and remain pending owner review rather than approved character canon.
+- Added `docs/creator-launch-pack.md` with the two creator bios and eight distinct concepts, each with separate Instagram and X copy. Concepts avoid real-world activity claims, endorsements, copyrighted character costumes, and invented metrics.
+- Rebuilt `/demo` around the characters, image candidates, and post drafts. It works without PostgreSQL, Redis, or platform credentials. The Cloudflare quick tunnel used for the former placeholder demo was stopped before these changes.
+- No Fine Photo Gen request or social publishing request was made. The live studio generation, approval, scheduling, and publishing workflows remain separate and gated.
