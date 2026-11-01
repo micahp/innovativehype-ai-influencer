@@ -8,6 +8,10 @@ The full product brief is in [the implementation prompt](docs/ai-influencer-stud
 
 Requirements: Node.js 22+, PostgreSQL 16+, Redis 7+.
 
+### Lightweight preview
+
+To view the dashboard concept without configuring PostgreSQL, Redis, social accounts, or Fine Photo Gen, run `npm run dev` and open [http://localhost:3000/demo](http://localhost:3000/demo). This read-only preview uses illustrative sample data; no metrics are real and no content is generated or published. The authenticated workspace at `/` still needs the services and configuration listed below.
+
 1. Copy `.env.example` to `.env` and set a strong `STUDIO_ADMIN_PASSWORD`, a random `SESSION_SECRET` of at least 32 characters, a base64 AES key for `SOCIAL_TOKEN_ENCRYPTION_KEY`, and a separate base64 AES key for `IDENTITY_ASSET_ENCRYPTION_KEY` (`openssl rand -base64 32`). Keep both encryption keys outside source control and back them up securely; losing the identity key makes uploaded character references unreadable.
 2. Set `DATABASE_URL` and `REDIS_URL` for PostgreSQL and Redis.
 3. Install and generate the Prisma client:
