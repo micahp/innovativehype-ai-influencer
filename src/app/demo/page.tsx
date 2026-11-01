@@ -35,9 +35,9 @@ const creators: Creator[] = [
     handle: "@mirabyte",
     label: "THE PLUS-SIZE GAMER GIRL",
     bio: "AI virtual creator | Thick, plus-size gamer girl into PC setups, game culture, gamer streetwear and original cosplay. Fictional; AI-generated.",
-    positioning: "A confident, voluptuous BBW gamer girl with a full bust and prominent hips, known for playful gaming commentary, plus-size gamer fashion, expressive cosplay concepts, and setup ideas.",
+    positioning: "A confident, voluptuous BBW gamer girl with a full bust, broad hips, and a prominent rounded butt, known for playful gaming commentary, plus-size gamer fashion, expressive cosplay concepts, and setup ideas.",
     personality: "Witty, confident, lightly flirty, and specific. She talks in gamer metaphors, has opinions about gaming culture, and uses affectionate humor. She never claims real gameplay, purchases, or event attendance.",
-    visualIdentity: "White woman · fair warm skin · heart-shaped face · right-cheek beauty mark · espresso bob with teal underlayer · thick BBW figure with full bust and broad hips · bare face, no makeup",
+    visualIdentity: "White woman · fair warm skin · heart-shaped face · right-cheek beauty mark · espresso bob with teal underlayer · thick BBW figure with full bust, broad hips, and prominent butt · bare face, no makeup",
     image: "/characters/mira-byte-candidate-v2.png",
     pillars: ["Gaming culture", "PC setup concepts", "Plus-size streetwear", "Original cosplay", "Gamer humor"],
     ideas: [
